@@ -7,17 +7,23 @@
 
   <style>
     :root {
-      --bg: #0b0d10;
-      --panel: rgba(255,255,255,0.06);
-      --panel2: rgba(255,255,255,0.08);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.70);
-      --muted2: rgba(255,255,255,0.55);
-      --accent: #f6c945;
-      --danger: #d13a3a;
-      --good: #2ecc71;
-      --line: rgba(255,255,255,0.12);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --bg1: #ffecd2;
+      --bg2: #fcb69f;
+      --bg3: #a1c4fd;
+      --bg4: #c2e9fb;
+
+      --card: rgba(255,255,255,0.82);
+      --card2: rgba(255,255,255,0.92);
+      --line: rgba(30, 30, 30, 0.08);
+      --text: rgba(15, 18, 25, 0.92);
+      --muted: rgba(15, 18, 25, 0.60);
+
+      --accent: #ff4d6d;
+      --accent2: #6c63ff;
+      --good: #16a34a;
+      --warn: #f59e0b;
+
+      --shadow: 0 20px 60px rgba(17, 24, 39, 0.18);
       --radius: 18px;
     }
 
@@ -26,55 +32,60 @@
     body {
       margin: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 700px at 30% 10%, rgba(246,201,69,0.12), transparent 60%),
-                  radial-gradient(900px 600px at 80% 20%, rgba(46,204,113,0.10), transparent 55%),
-                  radial-gradient(800px 600px at 50% 110%, rgba(209,58,58,0.10), transparent 55%),
-                  var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 28px 18px 44px;
+      padding: 26px 16px 44px;
+      background:
+        radial-gradient(900px 520px at 15% 10%, rgba(255, 77, 109, 0.22), transparent 55%),
+        radial-gradient(900px 520px at 85% 20%, rgba(108, 99, 255, 0.22), transparent 55%),
+        radial-gradient(900px 520px at 50% 110%, rgba(22, 163, 74, 0.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2) 35%, var(--bg3) 70%, var(--bg4));
     }
 
-    .wrap {
-      max-width: 980px;
-      margin: 0 auto;
-    }
+    .wrap { max-width: 1040px; margin: 0 auto; }
 
     header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 16px;
+      display: grid;
+      gap: 12px;
       margin-bottom: 14px;
+    }
+
+    .topRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 30px;
       letter-spacing: 0.2px;
     }
 
     .subtitle {
+      margin: 6px 0 0;
       color: var(--muted);
-      margin-top: 6px;
       font-size: 14px;
     }
 
-    .pill {
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       padding: 10px 12px;
       border-radius: 999px;
-      background: var(--panel);
+      background: var(--card);
       border: 1px solid var(--line);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
       font-size: 13px;
       color: var(--muted);
       white-space: nowrap;
     }
 
-    .pill b { color: var(--text); font-weight: 700; }
+    .badge b { color: var(--text); font-weight: 900; }
 
     .grid {
       display: grid;
@@ -83,16 +94,17 @@
       margin-top: 14px;
     }
 
-    @media (min-width: 860px) {
+    @media (min-width: 920px) {
       .grid { grid-template-columns: 1.2fr 0.8fr; }
     }
 
     .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.04));
+      background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      backdrop-filter: blur(10px);
     }
 
     .cardHeader {
@@ -102,18 +114,19 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      background: var(--card2);
     }
 
     .cardHeader .title {
       font-size: 14px;
       color: var(--muted);
-      letter-spacing: 0.2px;
     }
 
     .cardHeader .title b { color: var(--text); }
 
     .cardBody { padding: 16px; }
 
+    /* Cases */
     .cases {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -121,58 +134,119 @@
     }
 
     .caseBtn {
-      position: relative;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: linear-gradient(180deg, rgba(246,201,69,0.18), rgba(246,201,69,0.06));
-      color: var(--text);
-      border-radius: 14px;
-      padding: 14px 10px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 12px 10px;
       cursor: pointer;
-      transition: transform 120ms ease, background 160ms ease, border-color 160ms ease;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.28);
       user-select: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.40));
+      box-shadow: 0 12px 26px rgba(17, 24, 39, 0.12);
+      transition: transform 120ms ease, box-shadow 140ms ease, border-color 140ms ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .caseBtn:hover { transform: translateY(-2px); border-color: rgba(246,201,69,0.55); }
+    /* soft colourful shine */
+    .caseBtn::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 77, 109, 0.28), transparent 45%),
+                  radial-gradient(circle at 70% 40%, rgba(108, 99, 255, 0.28), transparent 48%),
+                  radial-gradient(circle at 50% 85%, rgba(22, 163, 74, 0.22), transparent 50%);
+      filter: blur(0px);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .caseBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(17, 24, 39, 0.16);
+      border-color: rgba(0,0,0,0.14);
+    }
+
     .caseBtn:active { transform: translateY(0px) scale(0.99); }
 
     .caseNumber {
-      font-weight: 800;
-      font-size: 16px;
+      position: relative;
+      font-weight: 950;
+      font-size: 15px;
       letter-spacing: 0.2px;
+      z-index: 1;
     }
 
     .caseHint {
+      position: relative;
       margin-top: 4px;
       font-size: 11px;
-      color: var(--muted2);
+      color: rgba(15, 18, 25, 0.58);
+      z-index: 1;
     }
 
     .caseBtn.selected {
-      outline: 2px solid rgba(46,204,113,0.65);
-      border-color: rgba(46,204,113,0.55);
-      background: linear-gradient(180deg, rgba(46,204,113,0.16), rgba(46,204,113,0.06));
+      border-color: rgba(22, 163, 74, 0.40);
+      box-shadow: 0 18px 36px rgba(22, 163, 74, 0.14);
+    }
+
+    .ribbon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.12);
+      border: 1px solid rgba(22, 163, 74, 0.22);
+      color: rgba(15, 18, 25, 0.78);
     }
 
     .caseBtn.opened {
       cursor: not-allowed;
-      border-color: rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22);
+      opacity: 0.72;
+      filter: saturate(0.90);
     }
 
     .reveal {
-      font-weight: 900;
+      position: relative;
+      z-index: 1;
+      margin-top: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      font-weight: 950;
       font-size: 14px;
-      color: var(--accent);
-      margin-top: 6px;
+      color: rgba(15, 18, 25, 0.92);
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.70);
+      border: 1px solid rgba(0,0,0,0.06);
     }
 
-    .board {
+    /* Right board */
+    .board { display: grid; gap: 12px; }
+
+    .status {
       display: grid;
-      grid-template-columns: 1fr;
       gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(0,0,0,0.06);
     }
+
+    .statusLine {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .statusLine b { color: var(--text); }
 
     .amounts {
       display: grid;
@@ -181,144 +255,137 @@
     }
 
     .amt {
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.65);
+      border-radius: 14px;
       padding: 10px 10px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
+      font-weight: 950;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 20px rgba(17, 24, 39, 0.08);
     }
 
-    .amt small { color: var(--muted2); font-weight: 700; }
+    .amt small { color: rgba(15, 18, 25, 0.55); font-weight: 900; }
 
     .amt.out {
       opacity: 0.35;
       text-decoration: line-through;
+      box-shadow: none;
     }
-
-    .status {
-      display: grid;
-      gap: 10px;
-    }
-
-    .statusLine {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .statusLine b { color: var(--text); }
 
     .bankerBox {
-      border: 1px dashed rgba(246,201,69,0.40);
-      background: rgba(246,201,69,0.08);
-      border-radius: 14px;
-      padding: 12px;
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background:
+        radial-gradient(600px 260px at 20% 0%, rgba(255, 77, 109, 0.18), transparent 55%),
+        radial-gradient(600px 260px at 80% 10%, rgba(108, 99, 255, 0.18), transparent 55%),
+        rgba(255,255,255,0.72);
+      box-shadow: 0 18px 40px rgba(17, 24, 39, 0.12);
       display: grid;
       gap: 10px;
     }
 
+    .offerLabel { color: rgba(15, 18, 25, 0.62); font-weight: 900; font-size: 12px; }
+
     .offer {
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: 0.3px;
-      color: var(--accent);
+      font-size: 26px;
+      font-weight: 1000;
+      letter-spacing: 0.4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .btnRow { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .btn {
       appearance: none;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(0,0,0,0.10);
+      background: rgba(255,255,255,0.72);
       color: var(--text);
       padding: 10px 12px;
-      border-radius: 12px;
-      font-weight: 800;
+      border-radius: 14px;
+      font-weight: 950;
       cursor: pointer;
-      transition: transform 120ms ease, border-color 160ms ease, background 160ms ease;
+      transition: transform 120ms ease, box-shadow 140ms ease, border-color 140ms ease;
+      box-shadow: 0 12px 26px rgba(17, 24, 39, 0.10);
     }
 
-    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.35); }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(0,0,0,0.16); }
     .btn:active { transform: translateY(0px); }
 
     .btn.primary {
-      background: rgba(46,204,113,0.12);
-      border-color: rgba(46,204,113,0.35);
+      background: linear-gradient(135deg, rgba(22,163,74,0.20), rgba(22,163,74,0.08)), rgba(255,255,255,0.72);
+      border-color: rgba(22,163,74,0.22);
     }
 
     .btn.danger {
-      background: rgba(209,58,58,0.12);
-      border-color: rgba(209,58,58,0.35);
+      background: linear-gradient(135deg, rgba(255,77,109,0.22), rgba(255,77,109,0.08)), rgba(255,255,255,0.72);
+      border-color: rgba(255,77,109,0.22);
     }
 
-    .note {
-      color: var(--muted2);
-      font-size: 12px;
-      line-height: 1.4;
-    }
+    .note { color: rgba(15, 18, 25, 0.55); font-size: 12px; line-height: 1.45; }
 
     .toast {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.05);
-      color: var(--muted);
+      margin-top: 12px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.70);
+      box-shadow: 0 12px 26px rgba(17, 24, 39, 0.08);
+      color: rgba(15, 18, 25, 0.74);
       font-size: 13px;
     }
 
-    .toast strong { color: var(--text); }
+    .toast strong { color: rgba(15, 18, 25, 0.92); }
 
-    .footer {
-      margin-top: 16px;
-      color: rgba(255,255,255,0.55);
+    .miniFooter {
+      margin-top: 12px;
+      color: rgba(15, 18, 25, 0.55);
       font-size: 12px;
     }
-
-    a { color: var(--accent); }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <h1>Deal or No Deal</h1>
-        <div class="subtitle">10 cases. Pick your case, open the rest, and decide whether to take the banker’s offer.</div>
+      <div class="topRow">
+        <div>
+          <h1>Deal or No Deal ✨</h1>
+          <p class="subtitle">Bright, simple, and perfect for a year-end gathering. 10 cases only.</p>
+        </div>
+        <div class="badge" id="topBadge">Step: <b>Choose your case</b></div>
       </div>
-      <div class="pill" id="topPill">Step: <b>Choose your case</b></div>
     </header>
 
     <div class="grid">
       <div class="card">
         <div class="cardHeader">
-          <div class="title"><b>Cases</b> (click to select, then open others)</div>
+          <div class="title"><b>Cases</b> — pick yours, then open the rest</div>
           <button class="btn" id="resetBtn" title="Restart the game">Restart</button>
         </div>
         <div class="cardBody">
           <div class="cases" id="cases"></div>
           <div class="toast" id="log">Choose a case to keep as <strong>Your Case</strong>.</div>
-          <div class="footer">Tip: after your case is chosen, you’ll open 2 cases per round and get an offer.</div>
+          <div class="miniFooter">After picking your case, you’ll open <strong>2</strong> cases per round → then the banker calls.</div>
         </div>
       </div>
 
       <div class="card">
         <div class="cardHeader">
           <div class="title"><b>Game board</b></div>
-          <div class="pill">Remaining: <b id="remainingCount">10</b></div>
+          <div class="badge">Remaining: <b id="remainingCount">10</b></div>
         </div>
         <div class="cardBody">
           <div class="board">
             <div class="status">
-              <div class="statusLine"><span>Your case:</span> <b id="yourCase">—</b></div>
-              <div class="statusLine"><span>Opened this round:</span> <b id="openedThisRound">0</b></div>
-              <div class="statusLine"><span>Round:</span> <b id="round">—</b></div>
+              <div class="statusLine"><span>Your case</span> <b id="yourCase">—</b></div>
+              <div class="statusLine"><span>Round</span> <b id="round">—</b></div>
+              <div class="statusLine"><span>Opened this round</span> <b id="openedThisRound">0</b></div>
             </div>
 
             <div>
@@ -327,13 +394,13 @@
             </div>
 
             <div class="bankerBox" id="bankerBox" style="display:none;">
-              <div class="note">Banker’s offer</div>
+              <div class="offerLabel">Banker’s offer</div>
               <div class="offer" id="offer">$0</div>
               <div class="btnRow">
                 <button class="btn primary" id="dealBtn">Deal</button>
                 <button class="btn danger" id="noDealBtn">No Deal</button>
               </div>
-              <div class="note" id="offerNote">Take the money or keep playing.</div>
+              <div class="note" id="offerNote">Take it… or keep playing.</div>
             </div>
           </div>
         </div>
@@ -345,8 +412,8 @@
     // ✅ 10-case amounts requested
     const values = [1, 5, 10, 20, 30, 50, 80, 100, 200, 300];
 
-    // Banker offer settings (simple + fun): offer = average * multiplier that increases by round
-    const offerMultipliers = [0.70, 0.78, 0.86, 0.93]; // rounds 1..4
+    // Offer curve: starts a bit low, becomes more generous each round
+    const offerMultipliers = [0.70, 0.80, 0.90, 0.98];
 
     const fmt = (n) => "$" + n.toLocaleString();
 
@@ -360,13 +427,13 @@
     let phase = "pick"; // pick | play | offer | end
     let round = 1;
     let openedThisRound = 0;
-    const opensPerRound = 2; // with 10 cases, this feels good
+    const opensPerRound = 2;
 
     // Elements
     const casesEl = document.getElementById("cases");
     const amountsEl = document.getElementById("amounts");
     const logEl = document.getElementById("log");
-    const topPillEl = document.getElementById("topPill");
+    const topBadgeEl = document.getElementById("topBadge");
 
     const yourCaseEl = document.getElementById("yourCase");
     const remainingCountEl = document.getElementById("remainingCount");
@@ -386,7 +453,7 @@
     }
 
     function setTopStep(text) {
-      topPillEl.innerHTML = `Step: <b>${text}</b>`;
+      topBadgeEl.innerHTML = `Step: <b>${text}</b>`;
     }
 
     function setLog(html) {
@@ -399,7 +466,6 @@
       sorted.forEach(v => {
         const div = document.createElement("div");
         div.className = "amt" + (remaining.has(v) ? "" : " out");
-        div.dataset.value = String(v);
         div.innerHTML = `<span>${fmt(v)}</span><small>${remaining.has(v) ? "IN" : "OUT"}</small>`;
         amountsEl.appendChild(div);
       });
@@ -418,7 +484,6 @@
         const btn = document.createElement("button");
         btn.className = "caseBtn";
         btn.type = "button";
-        btn.dataset.index = String(i);
 
         const number = document.createElement("div");
         number.className = "caseNumber";
@@ -436,7 +501,14 @@
         btn.appendChild(number);
         btn.appendChild(hint);
 
-        if (yourCaseIndex === i) btn.classList.add("selected");
+        if (yourCaseIndex === i) {
+          btn.classList.add("selected");
+          const rib = document.createElement("div");
+          rib.className = "ribbon";
+          rib.textContent = "YOURS";
+          btn.appendChild(rib);
+        }
+
         if (openedCases.has(i)) {
           btn.classList.add("opened");
           const val = caseValues.get(i);
@@ -478,19 +550,17 @@
     function onCaseClick(i) {
       if (phase === "end") return;
 
-      // PICK PHASE: selecting your case
       if (phase === "pick") {
         yourCaseIndex = i;
         phase = "play";
         openedThisRound = 0;
         setTopStep("Open 2 cases");
-        setLog(`You chose <strong>Case ${i + 1}</strong> as your case. Now open <strong>${opensPerRound}</strong> other cases.`);
+        setLog(`You chose <strong>Case ${i + 1}</strong>. Now open <strong>${opensPerRound}</strong> other cases.`);
         renderStatus();
         renderCases();
         return;
       }
 
-      // In play/offer phases, you cannot open your own case until the end
       if (yourCaseIndex === i) {
         setLog(`That’s <strong>Your Case</strong>. Open a different case.`);
         return;
@@ -501,7 +571,6 @@
         return;
       }
 
-      // PLAY PHASE: open cases
       if (openedCases.has(i)) return;
 
       const val = caseValues.get(i);
@@ -516,8 +585,6 @@
       setLog(`Opened <strong>Case ${i + 1}</strong>: <strong>${fmt(val)}</strong> is out.`);
 
       const unopenedCount = values.length - openedCases.size;
-
-      // If only your case + one other remains, go to final reveal
       if (unopenedCount === 2) {
         endgame();
         return;
@@ -534,18 +601,18 @@
       const remainingArr = [...remaining];
       const avg = remainingArr.reduce((a,b) => a + b, 0) / remainingArr.length;
       const multiplier = offerMultipliers[Math.min(round - 1, offerMultipliers.length - 1)];
-      return Math.round(avg * multiplier);
+      return Math.max(1, Math.round(avg * multiplier));
     }
 
     function showOffer() {
       phase = "offer";
       const offer = computeOffer();
-      bankerBoxEl.style.display = "block";
+      bankerBoxEl.style.display = "grid";
       offerEl.textContent = fmt(offer);
-      offerNoteEl.textContent = `Round ${round} offer is based on remaining amounts.`;
+      offerNoteEl.textContent = `Round ${round} offer • Higher rounds = better offers.`;
 
       setTopStep("Deal or No Deal?");
-      setLog(`<strong>Banker calls!</strong> Offer: <strong>${fmt(offer)}</strong>.`);
+      setLog(`<strong>📞 Banker calls!</strong> Offer: <strong>${fmt(offer)}</strong>.`);
 
       dealBtn.onclick = () => acceptDeal(offer);
       noDealBtn.onclick = () => rejectDeal();
@@ -559,7 +626,6 @@
       setTopStep("Game over");
       setLog(`You took the deal: <strong>${fmt(offer)}</strong>. Your case was <strong>${fmt(yourVal)}</strong>. <br><br><strong>Restart</strong> to play again.`);
 
-      // Reveal your case visually
       openedCases.add(yourCaseIndex);
       remaining.delete(yourVal);
       renderAmounts();
@@ -580,7 +646,6 @@
     }
 
     function endgame() {
-      // Find the one remaining non-opened, non-your-case
       const remainingCaseIndexes = [];
       for (let i = 0; i < values.length; i++) {
         if (!openedCases.has(i)) remainingCaseIndexes.push(i);
@@ -594,7 +659,6 @@
       bankerBoxEl.style.display = "none";
       setTopStep("Final reveal");
 
-      // Reveal both
       openedCases.add(otherCaseIndex);
       openedCases.add(yourCaseIndex);
       remaining.delete(otherVal);
@@ -611,7 +675,6 @@
     }
 
     resetBtn.addEventListener("click", start);
-
     start();
   </script>
 </body>
