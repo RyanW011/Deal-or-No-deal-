@@ -318,7 +318,7 @@
         </div>
 
         <div id="finalResult">
-          <div class="label">Final amount</div>
+          <div class="label" id="finalLabel">Final amount</div>
           <div id="finalAmount">$0</div>
         </div>
       </div>
@@ -361,6 +361,7 @@
     const resetBtn = document.getElementById("resetBtn");
     const finalBox = document.getElementById("finalResult");
     const finalAmtEl = document.getElementById("finalAmount");
+    const finalLabelEl = document.getElementById("finalLabel");
 
     function shuffle(arr){ return [...arr].sort(() => Math.random() - 0.5); }
     function setTopStep(text){ topBadgeEl.innerHTML = `Step: <b>${text}</b>`; }
@@ -439,6 +440,7 @@
 
       offerLabelEl.textContent = "📞 Banker’s offer";
       offerNoteEl.textContent = "Take it… or keep playing.";
+      finalLabelEl.textContent = "Final amount";
 
       setTopStep("Choose your case");
       setLog('Choose a case to keep as <strong>Your Case</strong>.');
@@ -469,7 +471,6 @@
       noDealBtn.onclick = () => rejectDeal();
     }
 
-    // ✅ FINAL OFFER WHEN 2 CASES REMAIN
     function showFinalOffer(){
       phase = "offer";
       bankerBoxEl.style.display = "grid";
@@ -481,7 +482,6 @@
       const yourVal = caseValues.get(yourCaseIndex);
       const otherVal = caseValues.get(otherIdx);
       const avg2 = (yourVal + otherVal) / 2;
-
       const offer = Math.max(1, Math.round(avg2 * 0.95));
 
       offerLabelEl.textContent = "📞 Final banker offer";
@@ -514,6 +514,7 @@
       renderAmounts();
       renderCases();
 
+      finalLabelEl.textContent = "Final amount";
       finalAmtEl.textContent = fmt(offer);
       finalBox.style.display = "block";
     }
@@ -580,6 +581,7 @@
         `<strong>Restart</strong> to play again.`
       );
 
+      finalLabelEl.textContent = "You win";
       finalAmtEl.textContent = fmt(won);
       finalBox.style.display = "block";
     }
@@ -628,7 +630,6 @@
 
       const unopenedCount = values.length - openedCases.size;
 
-      // ✅ when 2 cases remain: show final banker offer first
       if(unopenedCount === 2){
         showFinalOffer();
         return;
