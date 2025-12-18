@@ -7,24 +7,19 @@
 
   <style>
     :root {
-      --bg1: #fff3d6;
-      --bg2: #ffe0f0;
-      --bg3: #d8f2ff;
-      --bg4: #e7ffe9;
-
-      --card: rgba(255,255,255,0.82);
-      --card2: rgba(255,255,255,0.92);
-      --line: rgba(30, 30, 30, 0.08);
-      --text: rgba(15, 18, 25, 0.92);
-      --muted: rgba(15, 18, 25, 0.60);
-
-      --accent: #ff4d6d;
-      --accent2: #6c63ff;
-      --good: #22c55e;
-      --warn: #f59e0b;
-
-      --shadow: 0 20px 60px rgba(17, 24, 39, 0.18);
-      --radius: 18px;
+      --bg: #07080a;
+      --bg2: #0b0d12;
+      --gold: #f6c945;
+      --gold2: #ffd36a;
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.70);
+      --line: rgba(255,255,255,0.14);
+      --panel: rgba(0,0,0,0.55);
+      --panel2: rgba(0,0,0,0.68);
+      --shadow: 0 28px 70px rgba(0,0,0,0.55);
+      --radius: 22px;
+      --green: #22c55e;
+      --red: #ff4d6d;
     }
 
     * { box-sizing: border-box; }
@@ -34,15 +29,17 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
       color: var(--text);
       min-height: 100vh;
-      padding: 26px 16px 44px;
+      padding: 28px 16px 48px;
       background:
-        linear-gradient(135deg, var(--bg1), var(--bg2) 32%, var(--bg3) 68%, var(--bg4));
-      position: relative;
+        radial-gradient(900px 520px at 20% 15%, rgba(246,201,69,0.18), transparent 55%),
+        radial-gradient(900px 520px at 80% 20%, rgba(255, 215, 106, 0.14), transparent 55%),
+        radial-gradient(900px 520px at 50% 120%, rgba(34, 197, 94, 0.10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
       overflow-x: hidden;
-    }
+      position: relative;
     }
 
-    /* Party background: soft fireworks + drifting confetti (CSS only) */
+    /* subtle gold dust */
     body::before {
       content: "";
       position: fixed;
@@ -50,200 +47,183 @@
       pointer-events: none;
       z-index: 0;
       background:
-        radial-gradient(circle at 12% 22%, rgba(255,77,109,0.32), transparent 35%),
-        radial-gradient(circle at 78% 18%, rgba(108,99,255,0.32), transparent 38%),
-        radial-gradient(circle at 55% 70%, rgba(34,197,94,0.28), transparent 40%),
-        radial-gradient(circle at 22% 78%, rgba(245,158,11,0.28), transparent 38%),
-        radial-gradient(circle at 92% 78%, rgba(255,215,0,0.26), transparent 40%);
-      animation: fireworksPulse 7.5s ease-in-out infinite;
-    }
+        radial-gradient(circle, rgba(246,201,69,0.22) 0 1px, transparent 2px) 0 0 / 110px 110px,
+        radial-gradient(circle, rgba(255,255,255,0.16) 0 1px, transparent 2px) 30px 20px / 140px 140px;
+      opacity: 0.20;
+      animation: dustDrift 22s linear infinite;
     }
 
-    body::after {
-      content: "";
+    @keyframes dustDrift {
+      0% { transform: translate3d(0,0,0); }
+      100% { transform: translate3d(-60px, 140px, 0); }
+    }
+
+    /* Full-screen effects canvas */
+    #fx {
       position: fixed;
       inset: 0;
+      width: 100vw;
+      height: 100vh;
       pointer-events: none;
-      z-index: 1;
-      background:
-        radial-gradient(circle, rgba(255, 77, 109, 0.75) 0 2px, transparent 3px) 0 0 / 120px 120px,
-        radial-gradient(circle, rgba(108, 99, 255, 0.75) 0 2px, transparent 3px) 40px 20px / 140px 140px,
-        radial-gradient(circle, rgba(34, 197, 94, 0.65) 0 2px, transparent 3px) 20px 60px / 160px 160px,
-        radial-gradient(circle, rgba(245, 158, 11, 0.65) 0 2px, transparent 3px) 70px 80px / 150px 150px;
-      opacity: 0.45;
-      animation: confettiDrift 18s linear infinite;
-    }
+      z-index: 2; /* behind UI */
     }
 
-    @keyframes fireworksPulse {
-      0%, 100% { transform: scale(1); opacity: 0.92; }
-      50% { transform: scale(1.03); opacity: 1; }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 5;
     }
-
-    @keyframes confettiDrift {
-      0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-      100% { transform: translate3d(-60px, 140px, 0) rotate(6deg); }
-    }
-
-    .wrap { max-width: 1040px; margin: 0 auto; position: relative; z-index: 5; }
 
     header {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .topRow {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
+      margin-bottom: 14px;
     }
 
-    h1 {
+    .titleBlock h1 {
       margin: 0;
       font-size: 30px;
       letter-spacing: 0.2px;
     }
 
-    .subtitle {
-      margin: 6px 0 0;
+    .titleBlock .sub {
+      margin-top: 6px;
       color: var(--muted);
       font-size: 14px;
     }
 
-    .badge {
+    .pill {
       display: inline-flex;
       align-items: center;
       gap: 10px;
       padding: 10px 12px;
       border-radius: 999px;
-      background: var(--card);
+      background: rgba(0,0,0,0.45);
       border: 1px solid var(--line);
-      box-shadow: var(--shadow);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
       backdrop-filter: blur(10px);
       font-size: 13px;
       color: var(--muted);
       white-space: nowrap;
     }
 
-    .badge b { color: var(--text); font-weight: 900; }
+    .pill b { color: var(--text); }
 
-    .grid {
+    .layout {
       display: grid;
-      grid-template-columns: 1fr;
       gap: 14px;
-      margin-top: 14px;
+      grid-template-columns: 1fr;
     }
 
-    @media (min-width: 920px) {
-      .grid { grid-template-columns: 1.2fr 0.8fr; }
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.14);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
       backdrop-filter: blur(10px);
     }
 
-    .cardHeader {
+    .panelHeader {
       padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      background: var(--card2);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.35);
     }
 
-    .cardHeader .title {
-      font-size: 14px;
+    .panelHeader .label {
       color: var(--muted);
+      font-size: 14px;
     }
 
-    .cardHeader .title b { color: var(--text); }
+    .panelHeader .label b { color: var(--text); }
 
-    .cardBody { padding: 16px; }
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 120ms ease, border-color 140ms ease;
+    }
 
-    /* Cases */
+    .btn:hover { transform: translateY(-1px); border-color: rgba(246,201,69,0.45); }
+    .btn:active { transform: translateY(0px); }
+
+    .panelBody { padding: 16px; }
+
+    /* Cases (make them BIG + central) */
     .cases {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
+    }
+
+    @media (min-width: 820px) {
+      .cases { gap: 14px; }
     }
 
     .caseBtn {
-      border: 1px solid rgba(0,0,0,0.10);
-      border-radius: 16px;
-      padding: 14px 10px;
+      position: relative;
+      border: 1px solid rgba(246,201,69,0.45);
+      border-radius: 18px;
+      padding: 18px 10px;
       cursor: pointer;
       user-select: none;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.30));
-      box-shadow: 0 12px 26px rgba(17, 24, 39, 0.12);
-      transition: transform 120ms ease, box-shadow 140ms ease, border-color 140ms ease, filter 140ms ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* gold shine */
-    .caseBtn::before {
-      content: "";
-      position: absolute;
-      inset: -50px;
-      background:
-        radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.42), transparent 48%),
-        radial-gradient(circle at 75% 35%, rgba(255, 185, 0, 0.28), transparent 55%),
-        radial-gradient(circle at 50% 85%, rgba(255, 255, 255, 0.18), transparent 55%),
-        linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 255, 255, 0.00));
-      opacity: 0.95;
-      pointer-events: none;
+        linear-gradient(180deg, rgba(246,201,69,0.35), rgba(246,201,69,0.12)),
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.24), transparent 60%),
+        rgba(0,0,0,0.25);
+      box-shadow: 0 22px 50px rgba(0,0,0,0.45);
+      transition: transform 120ms ease, box-shadow 140ms ease, filter 140ms ease;
+      min-height: 92px;
+      display: grid;
+      place-items: center;
     }
 
     .caseBtn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 18px 34px rgba(17, 24, 39, 0.16);
-      border-color: rgba(0,0,0,0.14);
+      filter: brightness(1.06);
+      box-shadow: 0 28px 60px rgba(0,0,0,0.55);
     }
 
     .caseBtn:active { transform: translateY(0px) scale(0.99); }
 
     .caseNumber {
-      position: relative;
-      font-weight: 950;
-      font-size: 15px;
-      letter-spacing: 0.2px;
-      z-index: 1;
+      font-weight: 1000;
+      font-size: 22px;
+      letter-spacing: 0.3px;
+      color: rgba(255,255,255,0.95);
+      text-shadow: 0 6px 18px rgba(0,0,0,0.55);
     }
 
     .caseHint {
-      position: relative;
-      margin-top: 4px;
-      font-size: 11px;
-      color: rgba(15, 18, 25, 0.58);
-      z-index: 1;
+      margin-top: 6px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.72);
     }
 
+    /* Selected case: whole tile turns green */
     .caseBtn.selected {
-      border-color: rgba(34, 197, 94, 0.85);
-      /* whole case becomes a bright, friendly green */
+      border-color: rgba(34,197,94,0.75);
       background:
-        linear-gradient(180deg, rgba(34,197,94,0.52), rgba(34,197,94,0.20)),
-        linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.30));
+        linear-gradient(180deg, rgba(34,197,94,0.55), rgba(34,197,94,0.18)),
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.22), transparent 60%),
+        rgba(0,0,0,0.18);
       box-shadow:
-        0 18px 36px rgba(34,197,94,0.20),
-        0 0 0 4px rgba(34,197,94,0.18);
-      filter: saturate(1.25) brightness(1.06);
-      animation: selectedPulse 1.9s ease-in-out infinite;
-    }
-
-    @keyframes selectedPulse {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-1px); }
+        0 28px 64px rgba(34,197,94,0.22),
+        0 0 0 5px rgba(34,197,94,0.14);
+      animation: selectedPulse 1.8s ease-in-out infinite;
     }
 
     @keyframes selectedPulse {
@@ -253,214 +233,167 @@
 
     .caseBtn.opened {
       cursor: not-allowed;
-      opacity: 0.72;
+      opacity: 0.80;
       filter: saturate(0.90);
     }
 
     .reveal {
-      position: relative;
-      z-index: 1;
-      margin-top: 7px;
+      margin-top: 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      font-weight: 950;
+      font-weight: 1000;
       font-size: 14px;
-      color: rgba(15, 18, 25, 0.92);
       padding: 8px 10px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.70);
-      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.92);
     }
 
-    /* Right board */
-    .board { display: grid; gap: 12px; }
-
-    .status {
-      display: grid;
-      gap: 10px;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.65);
-      border: 1px solid rgba(0,0,0,0.06);
+    .toast {
+      margin-top: 14px;
+      padding: 12px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.82);
+      font-size: 14px;
     }
 
-    .statusLine {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 13px;
+    .toast strong { color: rgba(255,255,255,0.96); }
+
+    /* Amounts: big, centred, below cases (no white bubbles) */
+    .amountSection {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .amountTitle {
+      text-align: center;
       color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
     }
-
-    .statusLine b { color: var(--text); }
 
     .amounts {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .amt {
-      border: 1px solid rgba(0,0,0,0.06);
-      background: rgba(255,255,255,0.65);
-      border-radius: 14px;
-      padding: 10px 10px;
-      font-weight: 950;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 10px 20px rgba(17, 24, 39, 0.08);
-    }
-
-    .amt small { color: rgba(15, 18, 25, 0.55); font-weight: 900; }
-
-    .amt.out {
-      opacity: 0.35;
-      text-decoration: line-through;
-      box-shadow: none;
-    }
-
-    .bankerBox {
-      border-radius: 18px;
-      padding: 14px;
-      border: 1px solid rgba(0,0,0,0.06);
-      background:
-        radial-gradient(600px 260px at 20% 0%, rgba(255, 77, 109, 0.18), transparent 55%),
-        radial-gradient(600px 260px at 80% 10%, rgba(108, 99, 255, 0.18), transparent 55%),
-        rgba(255,255,255,0.72);
-      box-shadow: 0 18px 40px rgba(17, 24, 39, 0.12);
-      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
     }
 
-    .offerLabel { color: rgba(15, 18, 25, 0.62); font-weight: 900; font-size: 12px; }
+    @media (max-width: 720px) {
+      .amounts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .amt {
+      text-align: center;
+      padding: 12px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(246,201,69,0.45);
+      background:
+        linear-gradient(180deg, rgba(246,201,69,0.18), rgba(246,201,69,0.06)),
+        rgba(0,0,0,0.22);
+      font-weight: 1000;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.40);
+    }
+
+    .amt.out {
+      opacity: 0.32;
+      text-decoration: line-through;
+      filter: grayscale(0.6);
+    }
+
+    /* Banker box – centred, big */
+    .bankerBox {
+      margin-top: 16px;
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid rgba(246,201,69,0.35);
+      background:
+        radial-gradient(600px 260px at 30% 0%, rgba(246,201,69,0.22), transparent 55%),
+        rgba(0,0,0,0.40);
+      box-shadow: 0 22px 50px rgba(0,0,0,0.45);
+      display: grid;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .offerLabel { color: rgba(255,255,255,0.72); font-weight: 900; font-size: 13px; }
 
     .offer {
-      font-size: 26px;
-      font-weight: 1000;
+      font-size: 34px;
+      font-weight: 1100;
       letter-spacing: 0.4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      text-shadow: 0 16px 60px rgba(246,201,69,0.18);
     }
 
-    .btnRow { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .btn {
-      appearance: none;
-      border: 1px solid rgba(0,0,0,0.10);
-      background: rgba(255,255,255,0.72);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-weight: 950;
-      cursor: pointer;
-      transition: transform 120ms ease, box-shadow 140ms ease, border-color 140ms ease;
-      box-shadow: 0 12px 26px rgba(17, 24, 39, 0.10);
-    }
-
-    .btn:hover { transform: translateY(-1px); border-color: rgba(0,0,0,0.16); }
-    .btn:active { transform: translateY(0px); }
+    .btnRow { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 
     .btn.primary {
-      background: linear-gradient(135deg, rgba(22,163,74,0.20), rgba(22,163,74,0.08)), rgba(255,255,255,0.72);
-      border-color: rgba(22,163,74,0.22);
+      background: rgba(34,197,94,0.12);
+      border-color: rgba(34,197,94,0.35);
     }
 
     .btn.danger {
-      background: linear-gradient(135deg, rgba(255,77,109,0.22), rgba(255,77,109,0.08)), rgba(255,255,255,0.72);
-      border-color: rgba(255,77,109,0.22);
+      background: rgba(255,77,109,0.12);
+      border-color: rgba(255,77,109,0.35);
     }
 
-    .note { color: rgba(15, 18, 25, 0.55); font-size: 12px; line-height: 1.45; }
-
-    .toast {
-      margin-top: 12px;
-      padding: 12px 12px;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,0.06);
-      background: rgba(255,255,255,0.70);
-      box-shadow: 0 12px 26px rgba(17, 24, 39, 0.08);
-      color: rgba(15, 18, 25, 0.74);
-      font-size: 13px;
-    }
-
-    .toast strong { color: rgba(15, 18, 25, 0.92); }
-
-    .miniFooter {
-      margin-top: 12px;
-      color: rgba(15, 18, 25, 0.55);
+    .note {
+      text-align: center;
+      color: rgba(255,255,255,0.62);
       font-size: 12px;
-    }
-
-    /* Full-screen effects canvas (fireworks/confetti/ribbons) */
-    #fx {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 3; /* behind UI (z=5), above background */
+      line-height: 1.45;
     }
   </style>
 </head>
 
 <body>
   <canvas id="fx"></canvas>
+
   <div class="wrap">
     <header>
-      <div class="topRow">
-        <div>
-          <h1>Deal or No Deal </h1>
-        </div>
-        <div class="badge" id="topBadge">Step: <b>Choose your case</b></div>
+      <div class="titleBlock">
+        <h1>Deal or No Deal ✨</h1>
+        <div class="sub">Gold & black, year-end vibe. 10 cases only.</div>
       </div>
+      <div class="pill" id="topBadge">Step: <b>Choose your case</b></div>
     </header>
 
-    <div class="grid">
-      <div class="card">
-        <div class="cardHeader">
-          <div class="title"><b>Cases</b> — pick yours, then open the rest</div>
-          <button class="btn" id="resetBtn" title="Restart the game">Restart</button>
+    <div class="layout">
+      <div class="panel">
+        <div class="panelHeader">
+          <div class="label"><b>Cases</b> — pick yours, then open others</div>
+          <button class="btn" id="resetBtn">Restart</button>
         </div>
-        <div class="cardBody">
+        <div class="panelBody">
           <div class="cases" id="cases"></div>
           <div class="toast" id="log">Choose a case to keep as <strong>Your Case</strong>.</div>
-          <div class="miniFooter">After picking your case, you’ll open <strong>2</strong> cases per round → then the banker calls.</div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="cardHeader">
-          <div class="title"><b>Game board</b></div>
-          <div class="badge">Remaining: <b id="remainingCount">10</b></div>
-        </div>
-        <div class="cardBody">
-          <div class="board">
-            <div class="status">
-              <div class="statusLine"><span>Your case</span> <b id="yourCase">—</b></div>
-              <div class="statusLine"><span>Round</span> <b id="round">—</b></div>
-              <div class="statusLine"><span>Opened this round</span> <b id="openedThisRound">0</b></div>
-            </div>
-
-            <div>
-              <div class="note" style="margin-bottom:8px;">Amounts (crossed out when removed)</div>
-              <div class="amounts" id="amounts"></div>
-            </div>
-
-            <div class="bankerBox" id="bankerBox" style="display:none;">
-              <div class="offerLabel">Banker’s offer</div>
-              <div class="offer" id="offer">$0</div>
-              <div class="btnRow">
-                <button class="btn primary" id="dealBtn">Deal</button>
-                <button class="btn danger" id="noDealBtn">No Deal</button>
-              </div>
-              <div class="note" id="offerNote">Take it… or keep playing.</div>
-            </div>
+          <div class="amountSection">
+            <div class="amountTitle">Amounts (crossed out when removed)</div>
+            <div class="amounts" id="amounts"></div>
           </div>
+
+          <div class="bankerBox" id="bankerBox" style="display:none;">
+            <div class="offerLabel">📞 Banker’s offer</div>
+            <div class="offer" id="offer">$0</div>
+            <div class="btnRow">
+              <button class="btn primary" id="dealBtn">Deal</button>
+              <button class="btn danger" id="noDealBtn">No Deal</button>
+            </div>
+            <div class="note" id="offerNote">Take it… or keep playing.</div>
+          </div>
+
+          <div class="note" style="margin-top:12px;">After picking your case, open <strong>2</strong> cases per round → then the banker calls.</div>
         </div>
       </div>
     </div>
@@ -470,14 +403,14 @@
     // ✅ 10-case amounts requested
     const values = [1, 5, 10, 20, 30, 50, 80, 100, 200, 300];
 
-    // Offer curve: starts a bit low, becomes more generous each round
-    const offerMultipliers = [0.70, 0.80, 0.90, 0.98];
+    // Offer curve: gets generous each round
+    const offerMultipliers = [0.70, 0.82, 0.92, 1.00];
 
     const fmt = (n) => "$" + n.toLocaleString();
 
     // State
     let shuffled = [];
-    let caseValues = new Map(); // caseIndex -> value
+    let caseValues = new Map();
     let remaining = new Set(values);
     let openedCases = new Set();
 
@@ -492,11 +425,6 @@
     const amountsEl = document.getElementById("amounts");
     const logEl = document.getElementById("log");
     const topBadgeEl = document.getElementById("topBadge");
-
-    const yourCaseEl = document.getElementById("yourCase");
-    const remainingCountEl = document.getElementById("remainingCount");
-    const openedThisRoundEl = document.getElementById("openedThisRound");
-    const roundEl = document.getElementById("round");
 
     const bankerBoxEl = document.getElementById("bankerBox");
     const offerEl = document.getElementById("offer");
@@ -524,16 +452,9 @@
       sorted.forEach(v => {
         const div = document.createElement("div");
         div.className = "amt" + (remaining.has(v) ? "" : " out");
-        div.innerHTML = `<span>${fmt(v)}</span><small>${remaining.has(v) ? "IN" : "OUT"}</small>`;
+        div.textContent = fmt(v);
         amountsEl.appendChild(div);
       });
-    }
-
-    function renderStatus() {
-      yourCaseEl.textContent = yourCaseIndex == null ? "—" : `Case ${yourCaseIndex + 1}`;
-      remainingCountEl.textContent = String(values.length - openedCases.size);
-      openedThisRoundEl.textContent = String(openedThisRound);
-      roundEl.textContent = (phase === "pick") ? "—" : String(round);
     }
 
     function renderCases() {
@@ -550,18 +471,13 @@
         const hint = document.createElement("div");
         hint.className = "caseHint";
 
-        if (phase === "pick") {
-          hint.textContent = "Select";
-        } else {
-          hint.textContent = (yourCaseIndex === i) ? "" : "Open";
-        }
+        if (phase === "pick") hint.textContent = "Select";
+        else hint.textContent = (yourCaseIndex === i) ? "" : "Open";
 
         btn.appendChild(number);
         btn.appendChild(hint);
 
-        if (yourCaseIndex === i) {
-          btn.classList.add("selected");
-        }
+        if (yourCaseIndex === i) btn.classList.add("selected");
 
         if (openedCases.has(i)) {
           btn.classList.add("opened");
@@ -597,7 +513,6 @@
       setLog('Choose a case to keep as <strong>Your Case</strong>.');
 
       renderAmounts();
-      renderStatus();
       renderCases();
     }
 
@@ -609,14 +524,14 @@
         phase = "play";
         openedThisRound = 0;
         setTopStep("Open 2 cases");
-        setLog(`You chose <strong>Case ${i + 1}</strong>. Now open <strong>${opensPerRound}</strong> other cases.`);
-        renderStatus();
+        setLog(`You chose <strong>${i + 1}</strong>. Now open <strong>${opensPerRound}</strong> other cases.`);
         renderCases();
+        celebratePick();
         return;
       }
 
       if (yourCaseIndex === i) {
-        setLog(`That’s <strong>Your Case</strong>. Open a different case.`);
+        setLog(`That’s <strong>Your Case</strong>. Open a different number.`);
         return;
       }
 
@@ -633,10 +548,9 @@
       openedThisRound++;
 
       renderAmounts();
-      renderStatus();
       renderCases();
 
-      setLog(`Opened <strong>Case ${i + 1}</strong>: <strong>${fmt(val)}</strong> is out.`);
+      setLog(`Opened <strong>${i + 1}</strong>: <strong>${fmt(val)}</strong> is out.`);
 
       const unopenedCount = values.length - openedCases.size;
       if (unopenedCount === 2) {
@@ -647,7 +561,7 @@
       if (openedThisRound >= opensPerRound) {
         showOffer();
       } else {
-        setTopStep(`Open ${opensPerRound - openedThisRound} more case${opensPerRound - openedThisRound === 1 ? "" : "s"}`);
+        setTopStep(`Open ${opensPerRound - openedThisRound} more`);
       }
     }
 
@@ -673,6 +587,7 @@
     }
 
     function acceptDeal(offer) {
+      celebrateBig();
       phase = "end";
       bankerBoxEl.style.display = "none";
 
@@ -683,7 +598,6 @@
       openedCases.add(yourCaseIndex);
       remaining.delete(yourVal);
       renderAmounts();
-      renderStatus();
       renderCases();
     }
 
@@ -695,11 +609,11 @@
 
       setTopStep("Open 2 cases");
       setLog(`No Deal. Open <strong>${opensPerRound}</strong> cases.`);
-      renderStatus();
       renderCases();
     }
 
     function endgame() {
+      celebrateBig();
       const remainingCaseIndexes = [];
       for (let i = 0; i < values.length; i++) {
         if (!openedCases.has(i)) remainingCaseIndexes.push(i);
@@ -719,16 +633,15 @@
       remaining.delete(yourVal);
 
       renderAmounts();
-      renderStatus();
       renderCases();
 
       setLog(`Final two!<br>
-        Your case (<strong>Case ${yourCaseIndex + 1}</strong>) was <strong>${fmt(yourVal)}</strong>.<br>
-        The other case (<strong>Case ${otherCaseIndex + 1}</strong>) was <strong>${fmt(otherVal)}</strong>.<br><br>
+        Your case (<strong>${yourCaseIndex + 1}</strong>) was <strong>${fmt(yourVal)}</strong>.<br>
+        The other (<strong>${otherCaseIndex + 1}</strong>) was <strong>${fmt(otherVal)}</strong>.<br><br>
         <strong>Restart</strong> to play again.`);
     }
 
-    // ---------- Party effects (canvas) ----------
+    // ---------- Party effects (canvas): make fireworks obvious ----------
     const fxCanvas = document.getElementById("fx");
     const fx = fxCanvas.getContext("2d");
 
@@ -749,161 +662,153 @@
     window.addEventListener("resize", resizeFx);
     resizeFx();
 
-    // Particles
     const confetti = [];
     const ribbons = [];
     const fireworks = [];
 
     const colours = [
-      [255, 77, 109],   // pink
-      [108, 99, 255],   // purple
+      [246, 201, 69],   // gold
+      [255, 211, 106],  // warm gold
+      [255, 255, 255],  // white
       [34, 197, 94],    // green
-      [245, 158, 11],   // amber
-      [255, 215, 0]     // gold
+      [255, 77, 109]    // pink
     ];
 
     const rand = (a, b) => a + Math.random() * (b - a);
     const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const rgba = (rgb, a) => `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`;
 
-    function rgba(rgb, a) { return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`; }
-
-    // Confetti pieces (small rectangles)
-    function spawnConfettiBurst(x = rand(0.2, 0.8) * W, y = rand(0.1, 0.4) * H, count = 90) {
+    function spawnConfettiBurst(x = rand(0.25, 0.75) * W, y = rand(0.18, 0.40) * H, count = 120) {
       for (let i = 0; i < count; i++) {
         const c = pick(colours);
         confetti.push({
           x, y,
-          vx: rand(-3.2, 3.2),
-          vy: rand(-7.5, -2.5),
-          g: rand(0.10, 0.18),
-          w: rand(5, 10),
-          h: rand(3, 7),
+          vx: rand(-3.8, 3.8),
+          vy: rand(-9.5, -3.5),
+          g: rand(0.11, 0.18),
+          w: rand(6, 12),
+          h: rand(4, 9),
           r: rand(0, Math.PI),
-          vr: rand(-0.18, 0.18),
-          life: rand(70, 120),
+          vr: rand(-0.22, 0.22),
+          life: rand(85, 140),
           col: c
         });
       }
     }
 
-    // Ribbons (wavy streamers)
-    function spawnRibbon(x = rand(0.1, 0.9) * W) {
+    function spawnRibbon(x = rand(0.08, 0.92) * W) {
       const c = pick(colours);
       ribbons.push({
         x,
-        y: -30,
-        vy: rand(1.2, 2.1),
-        amp: rand(14, 24),
-        freq: rand(0.02, 0.035),
+        y: -40,
+        vy: rand(1.5, 2.6),
+        amp: rand(16, 30),
+        freq: rand(0.02, 0.036),
         phase: rand(0, Math.PI * 2),
-        width: rand(5, 9),
-        len: rand(140, 220),
-        life: rand(220, 320),
+        width: rand(6, 10),
+        len: rand(160, 260),
+        life: rand(260, 380),
         col: c
       });
     }
 
-    // Firework (launch + explode)
     function launchFirework() {
-      const targetX = rand(0.18, 0.82) * W;
-      const targetY = rand(0.10, 0.38) * H;
+      const targetX = rand(0.16, 0.84) * W;
+      const targetY = rand(0.10, 0.36) * H;
       const startX = rand(0.10, 0.90) * W;
-      const startY = H + 10;
+      const startY = H + 20;
       const c = pick(colours);
       fireworks.push({
         type: "rocket",
         x: startX,
         y: startY,
-        vx: (targetX - startX) * 0.02,
-        vy: (targetY - startY) * 0.02,
+        vx: (targetX - startX) * 0.022,
+        vy: (targetY - startY) * 0.022,
         tx: targetX,
         ty: targetY,
-        col: c,
-        t: 0
+        col: c
       });
     }
 
     function explodeFirework(x, y, baseCol) {
-      const n = 60;
+      const n = 80;
       for (let i = 0; i < n; i++) {
         const a = (i / n) * Math.PI * 2;
-        const sp = rand(1.6, 4.6);
-        const col = (Math.random() < 0.25) ? [255, 255, 255] : (Math.random() < 0.35 ? [255, 215, 0] : baseCol);
+        const sp = rand(2.0, 5.2);
+        const col = (Math.random() < 0.35) ? [255, 255, 255] : (Math.random() < 0.55 ? [246,201,69] : baseCol);
         fireworks.push({
           type: "spark",
           x, y,
-          vx: Math.cos(a) * sp + rand(-0.3, 0.3),
-          vy: Math.sin(a) * sp + rand(-0.3, 0.3),
+          vx: Math.cos(a) * sp + rand(-0.4, 0.4),
+          vy: Math.sin(a) * sp + rand(-0.4, 0.4),
           g: rand(0.05, 0.09),
-          life: rand(45, 80),
+          life: rand(55, 95),
           col
         });
       }
     }
 
-    // Ambient effects: gentle confetti + occasional fireworks
     let frame = 0;
     function fxTick() {
       frame++;
 
-      // Clear with slight trail for smooth motion
-      fx.clearRect(0, 0, W, H);
+      // Slight trail for nicer glow
+      fx.fillStyle = "rgba(0,0,0,0.18)";
+      fx.fillRect(0, 0, W, H);
 
-      // Spawn ambient ribbons
-      if (frame % 28 === 0 && (phase !== "pick" || Math.random() < 0.6)) spawnRibbon();
+      // Ambient: frequent fireworks so you definitely see them
+      if (frame % 55 === 0) launchFirework();
+      if (frame % 20 === 0) spawnRibbon();
 
-      // Spawn ambient fireworks
-      if (frame % 90 === 0 && Math.random() < 0.55) launchFirework();
-
-      // Draw fireworks
+      // Fireworks
       for (let i = fireworks.length - 1; i >= 0; i--) {
         const p = fireworks[i];
-
         if (p.type === "rocket") {
-          p.t += 1;
+          const ox = p.x, oy = p.y;
           p.x += p.vx;
           p.y += p.vy;
 
-          // trail
           fx.beginPath();
-          fx.strokeStyle = rgba(p.col, 0.65);
-          fx.lineWidth = 2;
-          fx.moveTo(p.x, p.y);
-          fx.lineTo(p.x - p.vx * 10, p.y - p.vy * 10);
+          fx.strokeStyle = rgba(p.col, 0.85);
+          fx.lineWidth = 3;
+          fx.moveTo(ox, oy);
+          fx.lineTo(p.x, p.y);
           fx.stroke();
 
-          // reached target
+          fx.beginPath();
+          fx.fillStyle = rgba(p.col, 0.95);
+          fx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          fx.fill();
+
           if (Math.abs(p.x - p.tx) < 10 && Math.abs(p.y - p.ty) < 10) {
             explodeFirework(p.x, p.y, p.col);
             fireworks.splice(i, 1);
           }
         } else {
-          // spark
           p.x += p.vx;
           p.y += p.vy;
           p.vy += p.g;
           p.life -= 1;
 
           fx.beginPath();
-          fx.fillStyle = rgba(p.col, Math.max(0, Math.min(1, p.life / 80)));
-          fx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+          fx.fillStyle = rgba(p.col, Math.max(0, Math.min(1, p.life / 95)));
+          fx.arc(p.x, p.y, 2.4, 0, Math.PI * 2);
           fx.fill();
 
           if (p.life <= 0) fireworks.splice(i, 1);
         }
       }
 
-      // Draw ribbons
+      // Ribbons
       for (let i = ribbons.length - 1; i >= 0; i--) {
         const r = ribbons[i];
         r.y += r.vy;
         r.life -= 1;
 
         fx.lineWidth = r.width;
-        fx.strokeStyle = rgba(r.col, 0.55);
+        fx.strokeStyle = rgba(r.col, 0.38);
         fx.beginPath();
-
-        const steps = 14;
+        const steps = 16;
         for (let s = 0; s <= steps; s++) {
           const t = s / steps;
           const yy = r.y + t * r.len;
@@ -913,10 +818,10 @@
         }
         fx.stroke();
 
-        if (r.y - r.len > H + 40 || r.life <= 0) ribbons.splice(i, 1);
+        if (r.y - r.len > H + 60 || r.life <= 0) ribbons.splice(i, 1);
       }
 
-      // Draw confetti
+      // Confetti
       for (let i = confetti.length - 1; i >= 0; i--) {
         const c = confetti[i];
         c.x += c.vx;
@@ -928,57 +833,37 @@
         fx.save();
         fx.translate(c.x, c.y);
         fx.rotate(c.r);
-        fx.fillStyle = rgba(c.col, Math.max(0, Math.min(1, c.life / 110)));
+        fx.fillStyle = rgba(c.col, Math.max(0, Math.min(1, c.life / 140)));
         fx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
         fx.restore();
 
-        if (c.y > H + 40 || c.life <= 0) confetti.splice(i, 1);
+        if (c.y > H + 60 || c.life <= 0) confetti.splice(i, 1);
       }
 
       requestAnimationFrame(fxTick);
     }
 
-    // Start ambient effects
+    // start effects
+    // Clear once first so trail fill doesn't darken immediately
+    fx.clearRect(0, 0, W, H);
     fxTick();
 
-    // Big celebration moments
     function celebrateBig() {
-      spawnConfettiBurst(rand(0.25, 0.75) * W, rand(0.18, 0.35) * H, 150);
-      spawnConfettiBurst(rand(0.25, 0.75) * W, rand(0.18, 0.35) * H, 150);
+      spawnConfettiBurst(rand(0.25, 0.75) * W, rand(0.18, 0.35) * H, 180);
+      spawnConfettiBurst(rand(0.25, 0.75) * W, rand(0.18, 0.35) * H, 180);
       launchFirework();
-      setTimeout(launchFirework, 250);
-      setTimeout(launchFirework, 500);
-      for (let i = 0; i < 5; i++) setTimeout(() => spawnRibbon(rand(0.1, 0.9) * W), i * 140);
+      setTimeout(launchFirework, 220);
+      setTimeout(launchFirework, 440);
+      for (let i = 0; i < 6; i++) setTimeout(() => spawnRibbon(rand(0.1, 0.9) * W), i * 120);
     }
 
-    // Light pop when the player picks their case
     function celebratePick() {
-      spawnConfettiBurst(rand(0.35, 0.65) * W, rand(0.22, 0.30) * H, 70);
+      spawnConfettiBurst(rand(0.35, 0.65) * W, rand(0.22, 0.30) * H, 90);
+      launchFirework();
     }
-
-    // Hook celebrations into game moments
-    const _acceptDeal = acceptDeal;
-    acceptDeal = (offer) => {
-      celebrateBig();
-      _acceptDeal(offer);
-    };
-
-    const _endgame = endgame;
-    endgame = () => {
-      celebrateBig();
-      _endgame();
-    };
-
-    const _onCaseClick = onCaseClick;
-    onCaseClick = (i) => {
-      const wasPick = (phase === "pick");
-      _onCaseClick(i);
-      if (wasPick && phase !== "pick") celebratePick();
-    };
 
     resetBtn.addEventListener("click", () => {
-      // small reset sparkle
-      spawnConfettiBurst(rand(0.35, 0.65) * W, rand(0.18, 0.26) * H, 60);
+      spawnConfettiBurst(rand(0.35, 0.65) * W, rand(0.18, 0.26) * H, 90);
       start();
     });
 
