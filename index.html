@@ -289,16 +289,16 @@
 
     .amt {
       text-align: center;
-      padding: 12px 10px;
-      border-radius: 16px;
-      border: 1px solid rgba(246,201,69,0.45);
+      padding: 14px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(246,201,69,0.65);
       background:
-        linear-gradient(180deg, rgba(246,201,69,0.18), rgba(246,201,69,0.06)),
-        rgba(0,0,0,0.22);
+        linear-gradient(180deg, rgba(0,0,0,0.75), rgba(0,0,0,0.55));
       font-weight: 1000;
-      font-size: 16px;
-      letter-spacing: 0.2px;
-      box-shadow: 0 16px 36px rgba(0,0,0,0.40);
+      font-size: 18px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.55);
+    }
     }
 
     .amt.out {
@@ -394,6 +394,11 @@
           </div>
 
           <div class="note" style="margin-top:12px;">After picking your case, open <strong>2</strong> cases per round → then the banker calls.</div>
+
+          <div id="finalResult" style="display:none; margin-top:22px; padding:18px 16px; border-radius:22px; border:2px solid rgba(246,201,69,0.65); background:linear-gradient(180deg, rgba(0,0,0,0.78), rgba(0,0,0,0.62)); box-shadow:0 28px 70px rgba(0,0,0,0.65); text-align:center;">
+            <div style="color:rgba(255,255,255,0.75); font-size:14px; margin-bottom:6px;">Final amount</div>
+            <div id="finalAmount" style="font-size:44px; font-weight:1200; letter-spacing:0.6px; background:linear-gradient(90deg, var(--gold), var(--gold2)); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 20px 70px rgba(246,201,69,0.35);"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -599,6 +604,12 @@
       remaining.delete(yourVal);
       renderAmounts();
       renderCases();
+
+      const finalBox = document.getElementById("finalResult");
+      const finalAmt = document.getElementById("finalAmount");
+      finalAmt.textContent = fmt(offer);
+      finalBox.style.display = "block";
+    }
     }
 
     function rejectDeal() {
@@ -634,6 +645,17 @@
 
       renderAmounts();
       renderCases();
+
+      setLog(`Final two!<br>
+        Your case (<strong>${yourCaseIndex + 1}</strong>) was <strong>${fmt(yourVal)}</strong>.<br>
+        The other (<strong>${otherCaseIndex + 1}</strong>) was <strong>${fmt(otherVal)}</strong>.<br><br>
+        <strong>Restart</strong> to play again.`);
+
+      const finalBox = document.getElementById("finalResult");
+      const finalAmt = document.getElementById("finalAmount");
+      finalAmt.textContent = fmt(yourVal);
+      finalBox.style.display = "block";
+    }
 
       setLog(`Final two!<br>
         Your case (<strong>${yourCaseIndex + 1}</strong>) was <strong>${fmt(yourVal)}</strong>.<br>
