@@ -395,16 +395,26 @@
       color: rgba(15, 18, 25, 0.55);
       font-size: 12px;
     }
+
+    /* Full-screen effects canvas (fireworks/confetti/ribbons) */
+    #fx {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 3; /* behind UI (z=5), above background */
+    }
   </style>
 </head>
 
 <body>
+  <canvas id="fx"></canvas>
   <div class="wrap">
     <header>
       <div class="topRow">
         <div>
-          <h1>Deal or No Deal ✨</h1>
-          <p class="subtitle">Bright, simple, and perfect for a year-end gathering. 10 cases only.</p>
+          <h1>Deal or No Deal </h1>
         </div>
         <div class="badge" id="topBadge">Step: <b>Choose your case</b></div>
       </div>
@@ -718,7 +728,260 @@
         <strong>Restart</strong> to play again.`);
     }
 
-    resetBtn.addEventListener("click", start);
+    // ---------- Party effects (canvas) ----------
+    const fxCanvas = document.getElementById("fx");
+    const fx = fxCanvas.getContext("2d");
+
+    const DPR = () => Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    let W = 0, H = 0, dpr = 1;
+
+    function resizeFx() {
+      dpr = DPR();
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+      fxCanvas.width = Math.floor(W * dpr);
+      fxCanvas.height = Math.floor(H * dpr);
+      fxCanvas.style.width = W + "px";
+      fxCanvas.style.height = H + "px";
+      fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener("resize", resizeFx);
+    resizeFx();
+
+    // Particles
+    const confetti = [];
+    const ribbons = [];
+    const fireworks = [];
+
+    const colours = [
+      [255, 77, 109],   // pink
+      [108, 99, 255],   // purple
+      [34, 197, 94],    // green
+      [245, 158, 11],   // amber
+      [255, 215, 0]     // gold
+    ];
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    function rgba(rgb, a) { return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`; }
+
+    // Confetti pieces (small rectangles)
+    function spawnConfettiBurst(x = rand(0.2, 0.8) * W, y = rand(0.1, 0.4) * H, count = 90) {
+      for (let i = 0; i < count; i++) {
+        const c = pick(colours);
+        confetti.push({
+          x, y,
+          vx: rand(-3.2, 3.2),
+          vy: rand(-7.5, -2.5),
+          g: rand(0.10, 0.18),
+          w: rand(5, 10),
+          h: rand(3, 7),
+          r: rand(0, Math.PI),
+          vr: rand(-0.18, 0.18),
+          life: rand(70, 120),
+          col: c
+        });
+      }
+    }
+
+    // Ribbons (wavy streamers)
+    function spawnRibbon(x = rand(0.1, 0.9) * W) {
+      const c = pick(colours);
+      ribbons.push({
+        x,
+        y: -30,
+        vy: rand(1.2, 2.1),
+        amp: rand(14, 24),
+        freq: rand(0.02, 0.035),
+        phase: rand(0, Math.PI * 2),
+        width: rand(5, 9),
+        len: rand(140, 220),
+        life: rand(220, 320),
+        col: c
+      });
+    }
+
+    // Firework (launch + explode)
+    function launchFirework() {
+      const targetX = rand(0.18, 0.82) * W;
+      const targetY = rand(0.10, 0.38) * H;
+      const startX = rand(0.10, 0.90) * W;
+      const startY = H + 10;
+      const c = pick(colours);
+      fireworks.push({
+        type: "rocket",
+        x: startX,
+        y: startY,
+        vx: (targetX - startX) * 0.02,
+        vy: (targetY - startY) * 0.02,
+        tx: targetX,
+        ty: targetY,
+        col: c,
+        t: 0
+      });
+    }
+
+    function explodeFirework(x, y, baseCol) {
+      const n = 60;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const sp = rand(1.6, 4.6);
+        const col = (Math.random() < 0.25) ? [255, 255, 255] : (Math.random() < 0.35 ? [255, 215, 0] : baseCol);
+        fireworks.push({
+          type: "spark",
+          x, y,
+          vx: Math.cos(a) * sp + rand(-0.3, 0.3),
+          vy: Math.sin(a) * sp + rand(-0.3, 0.3),
+          g: rand(0.05, 0.09),
+          life: rand(45, 80),
+          col
+        });
+      }
+    }
+
+    // Ambient effects: gentle confetti + occasional fireworks
+    let frame = 0;
+    function fxTick() {
+      frame++;
+
+      // Clear with slight trail for smooth motion
+      fx.clearRect(0, 0, W, H);
+
+      // Spawn ambient ribbons
+      if (frame % 28 === 0 && (phase !== "pick" || Math.random() < 0.6)) spawnRibbon();
+
+      // Spawn ambient fireworks
+      if (frame % 90 === 0 && Math.random() < 0.55) launchFirework();
+
+      // Draw fireworks
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        const p = fireworks[i];
+
+        if (p.type === "rocket") {
+          p.t += 1;
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // trail
+          fx.beginPath();
+          fx.strokeStyle = rgba(p.col, 0.65);
+          fx.lineWidth = 2;
+          fx.moveTo(p.x, p.y);
+          fx.lineTo(p.x - p.vx * 10, p.y - p.vy * 10);
+          fx.stroke();
+
+          // reached target
+          if (Math.abs(p.x - p.tx) < 10 && Math.abs(p.y - p.ty) < 10) {
+            explodeFirework(p.x, p.y, p.col);
+            fireworks.splice(i, 1);
+          }
+        } else {
+          // spark
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.g;
+          p.life -= 1;
+
+          fx.beginPath();
+          fx.fillStyle = rgba(p.col, Math.max(0, Math.min(1, p.life / 80)));
+          fx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+          fx.fill();
+
+          if (p.life <= 0) fireworks.splice(i, 1);
+        }
+      }
+
+      // Draw ribbons
+      for (let i = ribbons.length - 1; i >= 0; i--) {
+        const r = ribbons[i];
+        r.y += r.vy;
+        r.life -= 1;
+
+        fx.lineWidth = r.width;
+        fx.strokeStyle = rgba(r.col, 0.55);
+        fx.beginPath();
+
+        const steps = 14;
+        for (let s = 0; s <= steps; s++) {
+          const t = s / steps;
+          const yy = r.y + t * r.len;
+          const xx = r.x + Math.sin((yy * r.freq) + r.phase) * r.amp;
+          if (s === 0) fx.moveTo(xx, yy);
+          else fx.lineTo(xx, yy);
+        }
+        fx.stroke();
+
+        if (r.y - r.len > H + 40 || r.life <= 0) ribbons.splice(i, 1);
+      }
+
+      // Draw confetti
+      for (let i = confetti.length - 1; i >= 0; i--) {
+        const c = confetti[i];
+        c.x += c.vx;
+        c.y += c.vy;
+        c.vy += c.g;
+        c.r += c.vr;
+        c.life -= 1;
+
+        fx.save();
+        fx.translate(c.x, c.y);
+        fx.rotate(c.r);
+        fx.fillStyle = rgba(c.col, Math.max(0, Math.min(1, c.life / 110)));
+        fx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+        fx.restore();
+
+        if (c.y > H + 40 || c.life <= 0) confetti.splice(i, 1);
+      }
+
+      requestAnimationFrame(fxTick);
+    }
+
+    // Start ambient effects
+    fxTick();
+
+    // Big celebration moments
+    function celebrateBig() {
+      spawnConfettiBurst(rand(0.25, 0.75) * W, rand(0.18, 0.35) * H, 150);
+      spawnConfettiBurst(rand(0.25, 0.75) * W, rand(0.18, 0.35) * H, 150);
+      launchFirework();
+      setTimeout(launchFirework, 250);
+      setTimeout(launchFirework, 500);
+      for (let i = 0; i < 5; i++) setTimeout(() => spawnRibbon(rand(0.1, 0.9) * W), i * 140);
+    }
+
+    // Light pop when the player picks their case
+    function celebratePick() {
+      spawnConfettiBurst(rand(0.35, 0.65) * W, rand(0.22, 0.30) * H, 70);
+    }
+
+    // Hook celebrations into game moments
+    const _acceptDeal = acceptDeal;
+    acceptDeal = (offer) => {
+      celebrateBig();
+      _acceptDeal(offer);
+    };
+
+    const _endgame = endgame;
+    endgame = () => {
+      celebrateBig();
+      _endgame();
+    };
+
+    const _onCaseClick = onCaseClick;
+    onCaseClick = (i) => {
+      const wasPick = (phase === "pick");
+      _onCaseClick(i);
+      if (wasPick && phase !== "pick") celebratePick();
+    };
+
+    resetBtn.addEventListener("click", () => {
+      // small reset sparkle
+      spawnConfettiBurst(rand(0.35, 0.65) * W, rand(0.18, 0.26) * H, 60);
+      start();
+    });
+
     start();
   </script>
 </body>
