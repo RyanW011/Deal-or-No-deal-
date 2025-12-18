@@ -3,16 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deal or No Deal (Web Version)</title>
+  <title>Deal or No Deal</title>
+
   <style>
     body {
+      margin: 0;
+      padding: 20px;
       font-family: Arial, sans-serif;
       background: #111;
-      color: #f5f5f5;
+      color: #fff;
       text-align: center;
-      padding: 20px;
     }
-    h1 { margin-bottom: 10px; }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
     .cases {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -20,39 +26,35 @@
       max-width: 500px;
       margin: 20px auto;
     }
-    button.case {
+
+    .case {
+      background: #c62828;
+      border: none;
       padding: 15px;
       font-size: 16px;
-      cursor: pointer;
-      border-radius: 6px;
-      border: none;
-      background: #c62828;
       color: white;
+      border-radius: 6px;
+      cursor: pointer;
     }
-    button.case.opened {
+
+    .case.opened {
       background: #555;
       cursor: not-allowed;
     }
+
     #banker {
       margin-top: 20px;
       font-size: 18px;
     }
-    #log {
-      margin-top: 15px;
-      font-size: 14px;
-      opacity: 0.9;
-    }
   </style>
 </head>
-<body>
 
+<body>
   <h1>Deal or No Deal</h1>
-  <p>Choose a case to open. The banker will make offers as the game progresses.</p>
+  <p>Click a case to open it.</p>
 
   <div class="cases" id="cases"></div>
-
   <div id="banker"></div>
-  <div id="log"></div>
 
   <script>
     const values = [
@@ -63,13 +65,12 @@
       200000, 300000, 400000, 500000, 750000
     ];
 
-    let shuffled = values.sort(() => Math.random() - 0.5);
+    const shuffled = values.sort(() => Math.random() - 0.5);
     let remaining = [...shuffled];
     let opened = 0;
 
     const casesDiv = document.getElementById("cases");
     const bankerDiv = document.getElementById("banker");
-    const logDiv = document.getElementById("log");
 
     shuffled.forEach((value, index) => {
       const btn = document.createElement("button");
@@ -84,36 +85,19 @@
         remaining = remaining.filter(v => v !== value);
         opened++;
 
-        logDiv.textContent = `Opened case with $${value.toLocaleString()}`;
-
         if (opened % 5 === 0 && remaining.length > 1) {
-          makeOffer();
+          const avg = remaining.reduce((a, b) => a + b, 0) / remaining.length;
+          const offer = Math.round(avg * 0.9);
+          bankerDiv.innerHTML = `
+            <p><strong>Banker's Offer:</strong> $${offer.toLocaleString()}</p>
+            <button onclick="alert('Deal accepted: $${offer.toLocaleString()}')">Deal</button>
+            <button onclick="bankerDiv.innerHTML=''">No Deal</button>
+          `;
         }
       };
 
       casesDiv.appendChild(btn);
     });
-
-    function makeOffer() {
-      const avg = remaining.reduce((a, b) => a + b, 0) / remaining.length;
-      const offer = Math.round(avg * 0.9);
-
-      bankerDiv.innerHTML = `
-        <p><strong>Banker's Offer:</strong> $${offer.toLocaleString()}</p>
-        <button onclick="deal(${offer})">Deal</button>
-        <button onclick="noDeal()">No Deal</button>
-      `;
-    }
-
-    function deal(offer) {
-      alert(`You accepted the deal of $${offer.toLocaleString()}`);
-      location.reload();
-    }
-
-    function noDeal() {
-      bankerDiv.innerHTML = "<p>No Deal! Keep playing.</p>";
-    }
   </script>
-
 </body>
 </html>
