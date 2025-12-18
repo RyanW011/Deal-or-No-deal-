@@ -244,6 +244,14 @@
     .btnRow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
     .note{text-align:center;color:rgba(255,255,255,0.62);font-size:12px;line-height:1.45;}
 
+    .footerNote{
+      margin-top:12px;
+      text-align:center;
+      color:rgba(255,255,255,0.62);
+      font-size:12px;
+      line-height:1.45;
+    }
+
     #finalResult{
       display:none;
       margin-top:22px;
@@ -313,7 +321,7 @@
           </div>
         </div>
 
-        <div class="note" style="margin-top:12px;">
+        <div class="footerNote" id="footerNote">
           After picking your case, open <strong>2</strong> cases per round → then the banker calls.
         </div>
 
@@ -358,6 +366,8 @@
     const openMineBtn = document.getElementById("openMineBtn");
     const switchBtn = document.getElementById("switchBtn");
 
+    const footerNoteEl = document.getElementById("footerNote");
+
     const resetBtn = document.getElementById("resetBtn");
     const finalBox = document.getElementById("finalResult");
     const finalAmtEl = document.getElementById("finalAmount");
@@ -366,6 +376,42 @@
     function shuffle(arr){ return [...arr].sort(() => Math.random() - 0.5); }
     function setTopStep(text){ topBadgeEl.innerHTML = `Step: <b>${text}</b>`; }
     function setLog(html){ logEl.innerHTML = html; }
+
+    function setFooterForPhase(){
+      // Default gameplay helper
+      if(phase === "pick"){
+        footerNoteEl.style.display = "block";
+        footerNoteEl.innerHTML = `Pick a case, then open <strong>${opensPerRound}</strong> per round → banker calls.`;
+        return;
+      }
+
+      if(phase === "play"){
+        footerNoteEl.style.display = "block";
+        footerNoteEl.innerHTML = `Open <strong>${opensPerRound}</strong> cases this round → then the banker calls.`;
+        return;
+      }
+
+      // During final banker offer & final choice, replace the helper
+      if(offerLabelEl.textContent.includes("Final") || phase === "finalChoice"){
+        footerNoteEl.style.display = "block";
+        footerNoteEl.innerHTML = `Final stretch: decide <strong>Deal</strong> or <strong>No Deal</strong> → then <strong>Keep</strong> or <strong>Switch</strong>.`;
+        return;
+      }
+
+      if(phase === "offer"){
+        footerNoteEl.style.display = "block";
+        footerNoteEl.innerHTML = `Decide: <strong>Deal</strong> or <strong>No Deal</strong>.`;
+        return;
+      }
+
+      // End state: hide helper
+      if(phase === "end"){
+        footerNoteEl.style.display = "none";
+        return;
+      }
+
+      footerNoteEl.style.display = "block";
+    }
 
     function getRemainingCaseIndexes(){
       const idx = [];
@@ -447,6 +493,7 @@
 
       renderAmounts();
       renderCases();
+      setFooterForPhase();
     }
 
     function computeOffer(){
@@ -469,6 +516,8 @@
 
       dealBtn.onclick = () => acceptDeal(offer);
       noDealBtn.onclick = () => rejectDeal();
+
+      setFooterForPhase();
     }
 
     function showFinalOffer(){
@@ -496,6 +545,8 @@
         bankerBoxEl.style.display = "none";
         showFinalChoice();
       };
+
+      setFooterForPhase();
     }
 
     function acceptDeal(offer){
@@ -517,6 +568,8 @@
       finalLabelEl.textContent = "Final amount";
       finalAmtEl.textContent = fmt(offer);
       finalBox.style.display = "block";
+
+      setFooterForPhase();
     }
 
     function rejectDeal(){
@@ -527,7 +580,9 @@
 
       setTopStep("Open 2 cases");
       setLog(`No Deal. Open <strong>${opensPerRound}</strong> cases.`);
+
       renderCases();
+      setFooterForPhase();
     }
 
     function showFinalChoice(){
@@ -548,6 +603,8 @@
 
       openMineBtn.onclick = () => resolveFinal(false);
       switchBtn.onclick = () => resolveFinal(true);
+
+      setFooterForPhase();
     }
 
     function resolveFinal(didSwitch){
@@ -584,6 +641,8 @@
       finalLabelEl.textContent = "You win";
       finalAmtEl.textContent = fmt(won);
       finalBox.style.display = "block";
+
+      setFooterForPhase();
     }
 
     function onCaseClick(i){
@@ -603,6 +662,7 @@
         setLog(`You chose <strong>${i+1}</strong>. Now open <strong>${opensPerRound}</strong> other cases.`);
         renderCases();
         celebratePick();
+        setFooterForPhase();
         return;
       }
 
@@ -639,6 +699,7 @@
         showOffer();
       } else {
         setTopStep(`Open ${opensPerRound - openedThisRound} more`);
+        setFooterForPhase();
       }
     }
 
