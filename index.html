@@ -60,7 +60,6 @@
       margin-bottom:14px;
     }
     .titleBlock h1{margin:0;font-size:30px;letter-spacing:.2px;}
-    .titleBlock .sub{margin-top:6px;color:var(--muted);font-size:14px;}
 
     .pill{
       display:inline-flex;align-items:center;gap:10px;
@@ -199,7 +198,6 @@
       padding-top:14px;
       border-top:1px solid rgba(255,255,255,0.10);
     }
-    .amountTitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px;}
     .amounts{
       display:grid;
       grid-template-columns:repeat(5, minmax(0, 1fr));
@@ -297,7 +295,7 @@
         </div>
 
         <div class="bankerBox" id="bankerBox" style="display:none;">
-          <div class="offerLabel">📞 Banker’s offer</div>
+          <div class="offerLabel" id="offerLabel">📞 Banker’s offer</div>
           <div class="offer" id="offer">$0</div>
           <div class="btnRow">
             <button class="btn primary" id="dealBtn">Deal</button>
@@ -306,7 +304,6 @@
           <div class="note" id="offerNote">Take it… or keep playing.</div>
         </div>
 
-        <!-- FINAL KEEP/SWITCH UI -->
         <div class="bankerBox" id="finalChoice" style="display:none;">
           <div class="offerLabel">🎁 Final choice</div>
           <div class="note" id="finalChoiceText">Only two cases left. Keep your case or switch?</div>
@@ -350,6 +347,7 @@
     const topBadgeEl = document.getElementById("topBadge");
 
     const bankerBoxEl = document.getElementById("bankerBox");
+    const offerLabelEl = document.getElementById("offerLabel");
     const offerEl = document.getElementById("offer");
     const dealBtn = document.getElementById("dealBtn");
     const noDealBtn = document.getElementById("noDealBtn");
@@ -439,6 +437,9 @@
       finalChoiceEl.style.display = "none";
       finalBox.style.display = "none";
 
+      offerLabelEl.textContent = "📞 Banker’s offer";
+      offerNoteEl.textContent = "Take it… or keep playing.";
+
       setTopStep("Choose your case");
       setLog('Choose a case to keep as <strong>Your Case</strong>.');
 
@@ -457,6 +458,7 @@
       phase = "offer";
       const offer = computeOffer();
       bankerBoxEl.style.display = "grid";
+      offerLabelEl.textContent = "📞 Banker’s offer";
       offerEl.textContent = fmt(offer);
       offerNoteEl.textContent = `Round ${round} offer • Higher rounds = better offers.`;
 
@@ -465,6 +467,35 @@
 
       dealBtn.onclick = () => acceptDeal(offer);
       noDealBtn.onclick = () => rejectDeal();
+    }
+
+    // ✅ FINAL OFFER WHEN 2 CASES REMAIN
+    function showFinalOffer(){
+      phase = "offer";
+      bankerBoxEl.style.display = "grid";
+      finalChoiceEl.style.display = "none";
+
+      const idx = getRemainingCaseIndexes();
+      const otherIdx = idx.find(x => x !== yourCaseIndex);
+
+      const yourVal = caseValues.get(yourCaseIndex);
+      const otherVal = caseValues.get(otherIdx);
+      const avg2 = (yourVal + otherVal) / 2;
+
+      const offer = Math.max(1, Math.round(avg2 * 0.95));
+
+      offerLabelEl.textContent = "📞 Final banker offer";
+      offerEl.textContent = fmt(offer);
+      offerNoteEl.textContent = "Final offer • Deal or go to Keep/Switch";
+
+      setTopStep("Final banker offer");
+      setLog(`<strong>📞 Final banker offer!</strong> Offer: <strong>${fmt(offer)}</strong>.`);
+
+      dealBtn.onclick = () => acceptDeal(offer);
+      noDealBtn.onclick = () => {
+        bankerBoxEl.style.display = "none";
+        showFinalChoice();
+      };
     }
 
     function acceptDeal(offer){
@@ -597,9 +628,9 @@
 
       const unopenedCount = values.length - openedCases.size;
 
-      // ✅ When only 2 cases remain, do KEEP/SWITCH instead of auto reveal
+      // ✅ when 2 cases remain: show final banker offer first
       if(unopenedCount === 2){
-        showFinalChoice();
+        showFinalOffer();
         return;
       }
 
