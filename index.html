@@ -6,98 +6,613 @@
   <title>Deal or No Deal</title>
 
   <style>
+    :root {
+      --bg: #0b0d10;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.70);
+      --muted2: rgba(255,255,255,0.55);
+      --accent: #f6c945;
+      --danger: #d13a3a;
+      --good: #2ecc71;
+      --line: rgba(255,255,255,0.12);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      text-align: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 700px at 30% 10%, rgba(246,201,69,0.12), transparent 60%),
+                  radial-gradient(900px 600px at 80% 20%, rgba(46,204,113,0.10), transparent 55%),
+                  radial-gradient(800px 600px at 50% 110%, rgba(209,58,58,0.10), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 28px 18px 44px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
     }
 
     h1 {
-      margin-bottom: 10px;
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.2px;
     }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .pill b { color: var(--text); font-weight: 700; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    @media (min-width: 860px) {
+      .grid { grid-template-columns: 1.2fr 0.8fr; }
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.04));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .cardHeader {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cardHeader .title {
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.2px;
+    }
+
+    .cardHeader .title b { color: var(--text); }
+
+    .cardBody { padding: 16px; }
 
     .cases {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
-      max-width: 500px;
-      margin: 20px auto;
     }
 
-    .case {
-      background: #c62828;
-      border: none;
-      padding: 15px;
-      font-size: 16px;
-      color: white;
-      border-radius: 6px;
+    .caseBtn {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, rgba(246,201,69,0.18), rgba(246,201,69,0.06));
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 10px;
       cursor: pointer;
+      transition: transform 120ms ease, background 160ms ease, border-color 160ms ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.28);
+      user-select: none;
     }
 
-    .case.opened {
-      background: #555;
+    .caseBtn:hover { transform: translateY(-2px); border-color: rgba(246,201,69,0.55); }
+    .caseBtn:active { transform: translateY(0px) scale(0.99); }
+
+    .caseNumber {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+
+    .caseHint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted2);
+    }
+
+    .caseBtn.selected {
+      outline: 2px solid rgba(46,204,113,0.65);
+      border-color: rgba(46,204,113,0.55);
+      background: linear-gradient(180deg, rgba(46,204,113,0.16), rgba(46,204,113,0.06));
+    }
+
+    .caseBtn.opened {
       cursor: not-allowed;
+      border-color: rgba(255,255,255,0.12);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22);
     }
 
-    #banker {
-      margin-top: 20px;
-      font-size: 18px;
+    .reveal {
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--accent);
+      margin-top: 6px;
     }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .amounts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .amt {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 10px 10px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .amt small { color: var(--muted2); font-weight: 700; }
+
+    .amt.out {
+      opacity: 0.35;
+      text-decoration: line-through;
+    }
+
+    .status {
+      display: grid;
+      gap: 10px;
+    }
+
+    .statusLine {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .statusLine b { color: var(--text); }
+
+    .bankerBox {
+      border: 1px dashed rgba(246,201,69,0.40);
+      background: rgba(246,201,69,0.08);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .offer {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      color: var(--accent);
+    }
+
+    .btnRow { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 120ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.35); }
+    .btn:active { transform: translateY(0px); }
+
+    .btn.primary {
+      background: rgba(46,204,113,0.12);
+      border-color: rgba(46,204,113,0.35);
+    }
+
+    .btn.danger {
+      background: rgba(209,58,58,0.12);
+      border-color: rgba(209,58,58,0.35);
+    }
+
+    .note {
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .toast {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toast strong { color: var(--text); }
+
+    .footer {
+      margin-top: 16px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+    }
+
+    a { color: var(--accent); }
   </style>
 </head>
 
 <body>
-  <h1>Deal or No Deal</h1>
-  <p>Click a case to open it.</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Deal or No Deal</h1>
+        <div class="subtitle">10 cases. Pick your case, open the rest, and decide whether to take the banker’s offer.</div>
+      </div>
+      <div class="pill" id="topPill">Step: <b>Choose your case</b></div>
+    </header>
 
-  <div class="cases" id="cases"></div>
-  <div id="banker"></div>
+    <div class="grid">
+      <div class="card">
+        <div class="cardHeader">
+          <div class="title"><b>Cases</b> (click to select, then open others)</div>
+          <button class="btn" id="resetBtn" title="Restart the game">Restart</button>
+        </div>
+        <div class="cardBody">
+          <div class="cases" id="cases"></div>
+          <div class="toast" id="log">Choose a case to keep as <strong>Your Case</strong>.</div>
+          <div class="footer">Tip: after your case is chosen, you’ll open 2 cases per round and get an offer.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHeader">
+          <div class="title"><b>Game board</b></div>
+          <div class="pill">Remaining: <b id="remainingCount">10</b></div>
+        </div>
+        <div class="cardBody">
+          <div class="board">
+            <div class="status">
+              <div class="statusLine"><span>Your case:</span> <b id="yourCase">—</b></div>
+              <div class="statusLine"><span>Opened this round:</span> <b id="openedThisRound">0</b></div>
+              <div class="statusLine"><span>Round:</span> <b id="round">—</b></div>
+            </div>
+
+            <div>
+              <div class="note" style="margin-bottom:8px;">Amounts (crossed out when removed)</div>
+              <div class="amounts" id="amounts"></div>
+            </div>
+
+            <div class="bankerBox" id="bankerBox" style="display:none;">
+              <div class="note">Banker’s offer</div>
+              <div class="offer" id="offer">$0</div>
+              <div class="btnRow">
+                <button class="btn primary" id="dealBtn">Deal</button>
+                <button class="btn danger" id="noDealBtn">No Deal</button>
+              </div>
+              <div class="note" id="offerNote">Take the money or keep playing.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    const values = [
-      1, 5, 10, 25, 50,
-      75, 100, 200, 300, 400,
-      500, 750, 1000, 2500, 5000,
-      10000, 25000, 50000, 75000, 100000,
-      200000, 300000, 400000, 500000, 750000
-    ];
+    // ✅ 10-case amounts requested
+    const values = [1, 5, 10, 20, 30, 50, 80, 100, 200, 300];
 
-    const shuffled = values.sort(() => Math.random() - 0.5);
-    let remaining = [...shuffled];
-    let opened = 0;
+    // Banker offer settings (simple + fun): offer = average * multiplier that increases by round
+    const offerMultipliers = [0.70, 0.78, 0.86, 0.93]; // rounds 1..4
 
-    const casesDiv = document.getElementById("cases");
-    const bankerDiv = document.getElementById("banker");
+    const fmt = (n) => "$" + n.toLocaleString();
 
-    shuffled.forEach((value, index) => {
-      const btn = document.createElement("button");
-      btn.className = "case";
-      btn.textContent = index + 1;
+    // State
+    let shuffled = [];
+    let caseValues = new Map(); // caseIndex -> value
+    let remaining = new Set(values);
+    let openedCases = new Set();
 
-      btn.onclick = () => {
-        if (btn.classList.contains("opened")) return;
+    let yourCaseIndex = null;
+    let phase = "pick"; // pick | play | offer | end
+    let round = 1;
+    let openedThisRound = 0;
+    const opensPerRound = 2; // with 10 cases, this feels good
 
-        btn.classList.add("opened");
-        btn.textContent = "$" + value.toLocaleString();
-        remaining = remaining.filter(v => v !== value);
-        opened++;
+    // Elements
+    const casesEl = document.getElementById("cases");
+    const amountsEl = document.getElementById("amounts");
+    const logEl = document.getElementById("log");
+    const topPillEl = document.getElementById("topPill");
 
-        if (opened % 5 === 0 && remaining.length > 1) {
-          const avg = remaining.reduce((a, b) => a + b, 0) / remaining.length;
-          const offer = Math.round(avg * 0.9);
-          bankerDiv.innerHTML = `
-            <p><strong>Banker's Offer:</strong> $${offer.toLocaleString()}</p>
-            <button onclick="alert('Deal accepted: $${offer.toLocaleString()}')">Deal</button>
-            <button onclick="bankerDiv.innerHTML=''">No Deal</button>
-          `;
+    const yourCaseEl = document.getElementById("yourCase");
+    const remainingCountEl = document.getElementById("remainingCount");
+    const openedThisRoundEl = document.getElementById("openedThisRound");
+    const roundEl = document.getElementById("round");
+
+    const bankerBoxEl = document.getElementById("bankerBox");
+    const offerEl = document.getElementById("offer");
+    const dealBtn = document.getElementById("dealBtn");
+    const noDealBtn = document.getElementById("noDealBtn");
+    const offerNoteEl = document.getElementById("offerNote");
+
+    const resetBtn = document.getElementById("resetBtn");
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function setTopStep(text) {
+      topPillEl.innerHTML = `Step: <b>${text}</b>`;
+    }
+
+    function setLog(html) {
+      logEl.innerHTML = html;
+    }
+
+    function renderAmounts() {
+      const sorted = [...values].sort((a,b) => a - b);
+      amountsEl.innerHTML = "";
+      sorted.forEach(v => {
+        const div = document.createElement("div");
+        div.className = "amt" + (remaining.has(v) ? "" : " out");
+        div.dataset.value = String(v);
+        div.innerHTML = `<span>${fmt(v)}</span><small>${remaining.has(v) ? "IN" : "OUT"}</small>`;
+        amountsEl.appendChild(div);
+      });
+    }
+
+    function renderStatus() {
+      yourCaseEl.textContent = yourCaseIndex == null ? "—" : `Case ${yourCaseIndex + 1}`;
+      remainingCountEl.textContent = String(values.length - openedCases.size);
+      openedThisRoundEl.textContent = String(openedThisRound);
+      roundEl.textContent = (phase === "pick") ? "—" : String(round);
+    }
+
+    function renderCases() {
+      casesEl.innerHTML = "";
+      for (let i = 0; i < values.length; i++) {
+        const btn = document.createElement("button");
+        btn.className = "caseBtn";
+        btn.type = "button";
+        btn.dataset.index = String(i);
+
+        const number = document.createElement("div");
+        number.className = "caseNumber";
+        number.textContent = `Case ${i + 1}`;
+
+        const hint = document.createElement("div");
+        hint.className = "caseHint";
+
+        if (phase === "pick") {
+          hint.textContent = "Select";
+        } else {
+          hint.textContent = (yourCaseIndex === i) ? "Your Case" : "Open";
         }
-      };
 
-      casesDiv.appendChild(btn);
-    });
+        btn.appendChild(number);
+        btn.appendChild(hint);
+
+        if (yourCaseIndex === i) btn.classList.add("selected");
+        if (openedCases.has(i)) {
+          btn.classList.add("opened");
+          const val = caseValues.get(i);
+          const reveal = document.createElement("div");
+          reveal.className = "reveal";
+          reveal.textContent = fmt(val);
+          btn.appendChild(reveal);
+          hint.textContent = "Opened";
+        }
+
+        btn.addEventListener("click", () => onCaseClick(i));
+        casesEl.appendChild(btn);
+      }
+    }
+
+    function start() {
+      shuffled = shuffle(values);
+      caseValues = new Map();
+      for (let i = 0; i < values.length; i++) {
+        caseValues.set(i, shuffled[i]);
+      }
+
+      remaining = new Set(values);
+      openedCases = new Set();
+      yourCaseIndex = null;
+      phase = "pick";
+      round = 1;
+      openedThisRound = 0;
+
+      bankerBoxEl.style.display = "none";
+      setTopStep("Choose your case");
+      setLog('Choose a case to keep as <strong>Your Case</strong>.');
+
+      renderAmounts();
+      renderStatus();
+      renderCases();
+    }
+
+    function onCaseClick(i) {
+      if (phase === "end") return;
+
+      // PICK PHASE: selecting your case
+      if (phase === "pick") {
+        yourCaseIndex = i;
+        phase = "play";
+        openedThisRound = 0;
+        setTopStep("Open 2 cases");
+        setLog(`You chose <strong>Case ${i + 1}</strong> as your case. Now open <strong>${opensPerRound}</strong> other cases.`);
+        renderStatus();
+        renderCases();
+        return;
+      }
+
+      // In play/offer phases, you cannot open your own case until the end
+      if (yourCaseIndex === i) {
+        setLog(`That’s <strong>Your Case</strong>. Open a different case.`);
+        return;
+      }
+
+      if (phase === "offer") {
+        setLog(`Decide first: <strong>Deal</strong> or <strong>No Deal</strong>.`);
+        return;
+      }
+
+      // PLAY PHASE: open cases
+      if (openedCases.has(i)) return;
+
+      const val = caseValues.get(i);
+      openedCases.add(i);
+      remaining.delete(val);
+      openedThisRound++;
+
+      renderAmounts();
+      renderStatus();
+      renderCases();
+
+      setLog(`Opened <strong>Case ${i + 1}</strong>: <strong>${fmt(val)}</strong> is out.`);
+
+      const unopenedCount = values.length - openedCases.size;
+
+      // If only your case + one other remains, go to final reveal
+      if (unopenedCount === 2) {
+        endgame();
+        return;
+      }
+
+      if (openedThisRound >= opensPerRound) {
+        showOffer();
+      } else {
+        setTopStep(`Open ${opensPerRound - openedThisRound} more case${opensPerRound - openedThisRound === 1 ? "" : "s"}`);
+      }
+    }
+
+    function computeOffer() {
+      const remainingArr = [...remaining];
+      const avg = remainingArr.reduce((a,b) => a + b, 0) / remainingArr.length;
+      const multiplier = offerMultipliers[Math.min(round - 1, offerMultipliers.length - 1)];
+      return Math.round(avg * multiplier);
+    }
+
+    function showOffer() {
+      phase = "offer";
+      const offer = computeOffer();
+      bankerBoxEl.style.display = "block";
+      offerEl.textContent = fmt(offer);
+      offerNoteEl.textContent = `Round ${round} offer is based on remaining amounts.`;
+
+      setTopStep("Deal or No Deal?");
+      setLog(`<strong>Banker calls!</strong> Offer: <strong>${fmt(offer)}</strong>.`);
+
+      dealBtn.onclick = () => acceptDeal(offer);
+      noDealBtn.onclick = () => rejectDeal();
+    }
+
+    function acceptDeal(offer) {
+      phase = "end";
+      bankerBoxEl.style.display = "none";
+
+      const yourVal = caseValues.get(yourCaseIndex);
+      setTopStep("Game over");
+      setLog(`You took the deal: <strong>${fmt(offer)}</strong>. Your case was <strong>${fmt(yourVal)}</strong>. <br><br><strong>Restart</strong> to play again.`);
+
+      // Reveal your case visually
+      openedCases.add(yourCaseIndex);
+      remaining.delete(yourVal);
+      renderAmounts();
+      renderStatus();
+      renderCases();
+    }
+
+    function rejectDeal() {
+      bankerBoxEl.style.display = "none";
+      phase = "play";
+      round++;
+      openedThisRound = 0;
+
+      setTopStep("Open 2 cases");
+      setLog(`No Deal. Open <strong>${opensPerRound}</strong> cases.`);
+      renderStatus();
+      renderCases();
+    }
+
+    function endgame() {
+      // Find the one remaining non-opened, non-your-case
+      const remainingCaseIndexes = [];
+      for (let i = 0; i < values.length; i++) {
+        if (!openedCases.has(i)) remainingCaseIndexes.push(i);
+      }
+
+      const otherCaseIndex = remainingCaseIndexes.find(x => x !== yourCaseIndex);
+      const otherVal = caseValues.get(otherCaseIndex);
+      const yourVal = caseValues.get(yourCaseIndex);
+
+      phase = "end";
+      bankerBoxEl.style.display = "none";
+      setTopStep("Final reveal");
+
+      // Reveal both
+      openedCases.add(otherCaseIndex);
+      openedCases.add(yourCaseIndex);
+      remaining.delete(otherVal);
+      remaining.delete(yourVal);
+
+      renderAmounts();
+      renderStatus();
+      renderCases();
+
+      setLog(`Final two!<br>
+        Your case (<strong>Case ${yourCaseIndex + 1}</strong>) was <strong>${fmt(yourVal)}</strong>.<br>
+        The other case (<strong>Case ${otherCaseIndex + 1}</strong>) was <strong>${fmt(otherVal)}</strong>.<br><br>
+        <strong>Restart</strong> to play again.`);
+    }
+
+    resetBtn.addEventListener("click", start);
+
+    start();
   </script>
 </body>
 </html>
