@@ -279,23 +279,10 @@
 <body>
   <canvas id="fx"></canvas>
 
-  <!-- BGM + SFX (put these in the same folder, or change the src paths) -->
-  <audio id="bgm" loop preload="auto">
-    <source src="bgm.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Recommended SFX files:
-       click.mp3  = short soft button/case click
-       open.mp3   = case open / reveal
-       offer.mp3  = banker call / offer appears
-       deal.mp3   = deal accepted
-       win.mp3    = final win reveal
-  -->
-  <audio id="sfxClick" preload="auto"><source src="click.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxOpen"  preload="auto"><source src="open.mp3"  type="audio/mpeg"></audio>
-  <audio id="sfxOffer" preload="auto"><source src="offer.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxDeal"  preload="auto"><source src="deal.mp3"  type="audio/mpeg"></audio>
-  <audio id="sfxWin"   preload="auto"><source src="win.mp3"   type="audio/mpeg"></audio>
+  <!-- IMPORTANT: your files are in /audio/ on GitHub -->
+  <audio id="bgm" src="audio/bgm.mp3" loop preload="auto"></audio>
+  <audio id="sfxClick" src="audio/click.mp3" preload="auto"></audio>
+  <audio id="sfxOpen"  src="audio/open.mp3"  preload="auto"></audio>
 
   <div class="wrap">
     <header>
@@ -399,32 +386,36 @@
     const finalAmtEl = document.getElementById("finalAmount");
     const finalLabelEl = document.getElementById("finalLabel");
 
-    // ---------- AUDIO (BGM + SFX) ----------
+    // ---------- AUDIO (simple + reliable) ----------
     const bgm = document.getElementById("bgm");
-    const musicBtn = document.getElementById("musicBtn");
-    let musicOn = false;
-
     const sfxClick = document.getElementById("sfxClick");
     const sfxOpen  = document.getElementById("sfxOpen");
-    const sfxOffer = document.getElementById("sfxOffer");
-    const sfxDeal  = document.getElementById("sfxDeal");
-    const sfxWin   = document.getElementById("sfxWin");
+    const musicBtn = document.getElementById("musicBtn");
 
-    let audioUnlocked = false;
+    let musicOn = false;
 
     function updateMusicUI(){
       musicBtn.textContent = `Music: ${musicOn ? "On" : "Off"}`;
     }
 
+    function playSound(el, vol){
+      try{
+        el.pause();
+        el.currentTime = 0;
+        el.volume = vol;
+        const p = el.play();
+        if(p && typeof p.catch === "function") p.catch(()=>{});
+      }catch(e){}
+    }
+
     async function startMusic(){
-      if(musicOn) return;
       try{
         bgm.volume = 0.25;
         await bgm.play();
         musicOn = true;
         updateMusicUI();
       }catch(e){
-        // Autoplay may be blocked until a user gesture; ignore quietly
+        // If blocked, the user just needs to click once anywhere, then press Music again.
       }
     }
 
@@ -435,38 +426,8 @@
       updateMusicUI();
     }
 
-    function safePlay(el, vol=0.55){
-      try{
-        el.pause();
-        el.currentTime = 0;
-        el.volume = vol;
-        const p = el.play();
-        if(p && typeof p.catch === "function") p.catch(()=>{});
-      }catch(e){}
-    }
-
-    // Unlock audio on first user gesture (so SFX work reliably on iOS / Safari)
-    function unlockAudio(){
-      if(audioUnlocked) return;
-      audioUnlocked = true;
-
-      // tiny silent "priming" plays
-      const all = [bgm, sfxClick, sfxOpen, sfxOffer, sfxDeal, sfxWin];
-      all.forEach(a => {
-        try{
-          a.volume = 0;
-          const p = a.play();
-          if(p && typeof p.then === "function"){
-            p.then(() => { a.pause(); a.currentTime = 0; a.volume = 1; })
-             .catch(() => {});
-          }
-        }catch(e){}
-      });
-    }
-
     musicBtn.addEventListener("click", async () => {
-      unlockAudio();
-      safePlay(sfxClick, 0.35);
+      playSound(sfxClick, 0.35);
       if(musicOn) stopMusic();
       else await startMusic();
     });
@@ -613,8 +574,6 @@
       setTopStep("Deal or No Deal?");
       setLog(`<strong>📞 Banker calls!</strong> Offer: <strong>${fmt(offer)}</strong>.`);
 
-      safePlay(sfxOffer, 0.50);
-
       dealBtn.onclick = () => acceptDeal(offer);
       noDealBtn.onclick = () => rejectDeal();
 
@@ -641,11 +600,9 @@
       setTopStep("Final banker offer");
       setLog(`<strong>📞 Final banker offer!</strong> Offer: <strong>${fmt(offer)}</strong>.`);
 
-      safePlay(sfxOffer, 0.55);
-
       dealBtn.onclick = () => acceptDeal(offer);
       noDealBtn.onclick = () => {
-        safePlay(sfxClick, 0.35);
+        playSound(sfxClick, 0.35);
         bankerBoxEl.style.display = "none";
         showFinalChoice();
       };
@@ -654,7 +611,7 @@
     }
 
     function acceptDeal(offer){
-      safePlay(sfxDeal, 0.55);
+      playSound(sfxClick, 0.35);
       celebrateBig();
       phase = "end";
       bankerBoxEl.style.display = "none";
@@ -678,7 +635,7 @@
     }
 
     function rejectDeal(){
-      safePlay(sfxClick, 0.35);
+      playSound(sfxClick, 0.35);
 
       bankerBoxEl.style.display = "none";
       phase = "play";
@@ -716,7 +673,7 @@
     }
 
     function resolveFinal(didSwitch){
-      safePlay(sfxWin, 0.60);
+      playSound(sfxOpen, 0.55);
 
       celebrateBig();
       phase = "end";
@@ -756,29 +713,26 @@
     }
 
     function onCaseClick(i){
-      // Any click is a good time to unlock audio (required on mobile browsers)
-      unlockAudio();
-
       if(phase==="end"){
-        safePlay(sfxClick, 0.35);
+        playSound(sfxClick, 0.35);
         return;
       }
 
       if(phase==="finalChoice"){
-        safePlay(sfxClick, 0.35);
+        playSound(sfxClick, 0.35);
         setLog(`Choose <strong>Keep</strong> or <strong>Switch</strong> first.`);
         return;
       }
 
       if(phase==="pick"){
-        safePlay(sfxClick, 0.40);
+        playSound(sfxClick, 0.40);
 
         yourCaseIndex = i;
         phase = "play";
         openedThisRound = 0;
 
-        // Start music on first meaningful user interaction (avoids autoplay restrictions)
-        startMusic();
+        // Optional: auto-start music after first user gesture ONLY if you already turned Music on
+        // (keeping it manual is simplest)
 
         const n = opensThisRoundTarget();
         setTopStep(`Open ${n} cases`);
@@ -790,21 +744,21 @@
       }
 
       if(yourCaseIndex===i){
-        safePlay(sfxClick, 0.35);
+        playSound(sfxClick, 0.35);
         setLog(`That’s <strong>Your Case</strong>. Open a different number.`);
         return;
       }
 
       if(phase==="offer"){
-        safePlay(sfxClick, 0.35);
+        playSound(sfxClick, 0.35);
         setLog(`Decide first: <strong>Deal</strong> or <strong>No Deal</strong>.`);
         return;
       }
 
       if(openedCases.has(i)) return;
 
-      // Opening a case (main interaction sound)
-      safePlay(sfxOpen, 0.55);
+      // Opening a case
+      playSound(sfxOpen, 0.55);
 
       const val = caseValues.get(i);
       openedCases.add(i);
@@ -1037,8 +991,7 @@
     fxTick();
 
     resetBtn.addEventListener("click", () => {
-      unlockAudio();
-      safePlay(sfxClick, 0.35);
+      playSound(sfxClick, 0.35);
       spawnConfettiBurst(rand(0.35,0.65)*W, rand(0.18,0.26)*H, 90);
       start();
     });
