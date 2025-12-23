@@ -279,6 +279,11 @@
 <body>
   <canvas id="fx"></canvas>
 
+  <!-- BGM (put your bgm.mp3 in the same folder, or change the src) -->
+  <audio id="bgm" loop preload="auto">
+    <source src="bgm.mp3" type="audio/mpeg">
+  </audio>
+
   <div class="wrap">
     <header>
       <div class="titleBlock">
@@ -290,7 +295,10 @@
     <div class="panel">
       <div class="panelHeader">
         <div class="label"><b>Cases</b> — pick yours, then open others</div>
-        <button class="btn" id="resetBtn">Restart</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" id="musicBtn">Music: Off</button>
+          <button class="btn" id="resetBtn">Restart</button>
+        </div>
       </div>
 
       <div class="panelBody">
@@ -322,7 +330,7 @@
         </div>
 
         <div class="footerNote" id="footerNote">
-          After picking your case, open <strong>2</strong> cases per round → then the banker calls.
+          After picking your case, open <strong>3</strong> cases this round → then the banker calls.
         </div>
 
         <div id="finalResult">
@@ -347,7 +355,12 @@
     let phase = "pick"; // pick | play | offer | finalChoice | end
     let round = 1;
     let openedThisRound = 0;
-    const opensPerRound = 2;
+
+    // Round opening schedule: 3,3,2,1
+    const opensSchedule = [3, 3, 2, 1];
+    function opensThisRoundTarget(){
+      return opensSchedule[Math.min(round - 1, opensSchedule.length - 1)];
+    }
 
     const casesEl = document.getElementById("cases");
     const amountsEl = document.getElementById("amounts");
@@ -373,25 +386,59 @@
     const finalAmtEl = document.getElementById("finalAmount");
     const finalLabelEl = document.getElementById("finalLabel");
 
+    // ---------- BGM ----------
+    const bgm = document.getElementById("bgm");
+    const musicBtn = document.getElementById("musicBtn");
+    let musicOn = false;
+
+    function updateMusicUI(){
+      musicBtn.textContent = `Music: ${musicOn ? "On" : "Off"}`;
+    }
+
+    async function startMusic(){
+      if(musicOn) return;
+      try{
+        bgm.volume = 0.25;
+        await bgm.play(); // may be blocked until a user click (which picking a case provides)
+        musicOn = true;
+        updateMusicUI();
+      }catch(e){
+        // Autoplay blocked until a user gesture; ignore quietly
+      }
+    }
+
+    function stopMusic(){
+      musicOn = false;
+      bgm.pause();
+      bgm.currentTime = 0;
+      updateMusicUI();
+    }
+
+    musicBtn.addEventListener("click", async () => {
+      if(musicOn) stopMusic();
+      else await startMusic();
+    });
+    updateMusicUI();
+
     function shuffle(arr){ return [...arr].sort(() => Math.random() - 0.5); }
     function setTopStep(text){ topBadgeEl.innerHTML = `Step: <b>${text}</b>`; }
     function setLog(html){ logEl.innerHTML = html; }
 
     function setFooterForPhase(){
-      // Default gameplay helper
       if(phase === "pick"){
+        const n = opensThisRoundTarget();
         footerNoteEl.style.display = "block";
-        footerNoteEl.innerHTML = `Pick a case, then open <strong>${opensPerRound}</strong> per round → banker calls.`;
+        footerNoteEl.innerHTML = `Pick a case, then open <strong>${n}</strong> cases this round → then the banker calls.`;
         return;
       }
 
       if(phase === "play"){
+        const n = opensThisRoundTarget();
         footerNoteEl.style.display = "block";
-        footerNoteEl.innerHTML = `Open <strong>${opensPerRound}</strong> cases this round → then the banker calls.`;
+        footerNoteEl.innerHTML = `Open <strong>${n}</strong> cases this round → then the banker calls.`;
         return;
       }
 
-      // During final banker offer & final choice, replace the helper
       if(offerLabelEl.textContent.includes("Final") || phase === "finalChoice"){
         footerNoteEl.style.display = "block";
         footerNoteEl.innerHTML = `Final stretch: decide <strong>Deal</strong> or <strong>No Deal</strong> → then <strong>Keep</strong> or <strong>Switch</strong>.`;
@@ -404,7 +451,6 @@
         return;
       }
 
-      // End state: hide helper
       if(phase === "end"){
         footerNoteEl.style.display = "none";
         return;
@@ -578,8 +624,9 @@
       round++;
       openedThisRound = 0;
 
-      setTopStep("Open 2 cases");
-      setLog(`No Deal. Open <strong>${opensPerRound}</strong> cases.`);
+      const n = opensThisRoundTarget();
+      setTopStep(`Open ${n} cases`);
+      setLog(`No Deal. Open <strong>${n}</strong> cases.`);
 
       renderCases();
       setFooterForPhase();
@@ -658,8 +705,12 @@
         phase = "play";
         openedThisRound = 0;
 
-        setTopStep("Open 2 cases");
-        setLog(`You chose <strong>${i+1}</strong>. Now open <strong>${opensPerRound}</strong> other cases.`);
+        // Start music on first meaningful user interaction (avoids autoplay restrictions)
+        startMusic();
+
+        const n = opensThisRoundTarget();
+        setTopStep(`Open ${n} cases`);
+        setLog(`You chose <strong>${i+1}</strong>. Now open <strong>${n}</strong> other cases.`);
         renderCases();
         celebratePick();
         setFooterForPhase();
@@ -695,10 +746,11 @@
         return;
       }
 
-      if(openedThisRound >= opensPerRound){
+      const target = opensThisRoundTarget();
+      if(openedThisRound >= target){
         showOffer();
       } else {
-        setTopStep(`Open ${opensPerRound - openedThisRound} more`);
+        setTopStep(`Open ${target - openedThisRound} more`);
         setFooterForPhase();
       }
     }
